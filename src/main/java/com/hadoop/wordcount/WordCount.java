@@ -29,7 +29,7 @@ public class WordCount {
 //        FileInputFormat.addInputPath(job, new Path(otherArgs[0])); // 设置输入文件目录
 //        FileOutputFormat.setOutputPath(job, new Path(otherArgs[1])); // 设置输出文件目录
         FileInputFormat.addInputPath(job, new Path("file:///D:\\Bayes-MR\\NBCorpus\\NBCorpus\\Country\\ABDBI")); // 设置输入文件目录
-        FileOutputFormat.setOutputPath(job, new Path("file:///D:\\Bayes-MR")); // 设置输出文件目录
+        FileOutputFormat.setOutputPath(job, new Path("file:///D:\\Bayes-MR\\out")); // 设置输出文件目录
 
         System.exit(job.waitForCompletion(true)?0:1);
     }
