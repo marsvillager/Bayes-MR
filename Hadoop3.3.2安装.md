@@ -178,7 +178,7 @@ MapReduce 守护进程配置
  </configuration>
 ```
 
-### ⑤ yarn-site.xml 
+### ⑤ yarn-site.xml
 
 资源调度相关配置
 
@@ -233,7 +233,7 @@ start-dfs.sh
 
 ### ② 检查运行情况
 
-- 用 jps 命令检查 Hadoop 进程是否正常运行\
+- 用 jps 命令检查 Hadoop 进程是否正常运行
   - Jps
   - **DataNode**
   - **NameNode**
@@ -331,3 +331,23 @@ slave 集群 jps，有
 - Jps
 - DataNode
 - NodeManager
+
+# 5、运行和关闭
+
+## （1）运行
+
+```
+ hdfs namenode -format # 初始化，不然虽然能启动，但打不开网页
+ start-all.sh
+```
+
+hdfs: http://localhost:8088
+
+yarn: http://localhost:9870
+
+## （2）关闭
+
+```
+ stop-all.sh
+```
+
