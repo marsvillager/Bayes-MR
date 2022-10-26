@@ -117,7 +117,7 @@ ls /usr/lib/jvm/java-1.8.0-openjdk-amd64
  <configuration>
  	<property>
  		<name>fs.defaultFS</name>
- 		<value>hdfs://localhost:9000</value>
+ 		<value>hdfs://master:9000</value>
  	</property>
  	<property>
  		<name>hadoop.tmp.dir</name>
@@ -349,5 +349,49 @@ yarn: http://localhost:9870
 
 ```
  stop-all.sh
+```
+
+# appendix
+
+## 常用端口
+
+[Hadoop之常用端口号_61%的博客-CSDN博客_hadoop端口号](https://blog.csdn.net/weixin_44484668/article/details/123238351)
+
+	hadoop3.x
+	HDFS	NameNode	内部通常端口：8020、9000、9820
+	HDFS	NameNode	对用户的查询端口：9870
+	Yarn查看任务运行情况的端口：8088
+	历史服务器：19888
+
+nmap 粗略扫描
+
+```
+PORT     STATE SERVICE
+22/tcp   open  ssh
+8031/tcp open  unknown
+8042/tcp open  fs-agent
+8088/tcp open  radan-http
+```
+
+## 可视化界面
+
+### （1）HDFS
+
+```
+master:9870
+```
+
+### （2）YARN
+
+#### ① Resource Manager
+
+```
+master:8088
+```
+
+#### ② Node Manafer
+
+```
+master:8042
 ```
 

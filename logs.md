@@ -1,4 +1,4 @@
-hadoop: 18068110320
+整体流程：[IDEA配置Hadoop开发环境&编译运行WordCount程序 - bloglxc - 博客园 (cnblogs.com)](https://www.cnblogs.com/lxc1910/p/11798479.html)
 
 # 1.log4j（closed）
 
@@ -30,13 +30,13 @@ A:
 
 法一、如果是远程连接 Linux 上的 Hadoop 集群，是不需要在本地再下载 hadoop，只要下载 winutils 文件，然后配置环境变量，最后再把 hadoop.dll 文件放到 C:/windows/system32 下就可以了
 
-法二、hadoop 运行在 windows 系统上的，也是要下载 winutils 文件,然后配置环境变量，比上面多出一步就是，需要把你下的 winutils 文件下你需要的 Hadoop 版本的 bin 目录文件去替换你 windows 系统之前使用的 Hadoop 版本的 bin 目录文件，最后同样是把 hadoop.dll 文件放 C:/windows/system32 下就可以
+法二、hadoop 运行在 windows 系统上的，也是要下载 winutils 文件,然后配置环境变量，比上面多出一步就是，需要把你下的 winutils 文件下你需要的 Hadoop 版本的 bin 目录文件去替换你 windows 系统之前使用的 Hadoop 版本的 bin 目录文件，最后同样是把 hadoop.dll 文件放 C:/windows/system32 下就可以了
 
 ### winutils
 
 [cdarlint/winutils: winutils.exe hadoop.dll and hdfs.dll binaries for hadoop windows (github.com)](https://github.com/cdarlint/winutils)
 
-# 3、linux 下 hadoop
+# 3、linux 下 hadoop（closed）
 
 Q:
 
@@ -60,11 +60,11 @@ A:
 输出 key 的类型写错，不该是 Text，而是 IntWritable
 
 ```
-job.setOutputKeyClass(IntWritable.class); // 设置输出 key 的类型
-job.setOutputValueClass(Text.class); // 设置输出值的类型
+job.setOutputKeyClass(Text.class); // 设置输出 key 的类型
+job.setOutputValueClass(IntWritable.class); // 设置输出值的类型
 ```
 
-# 5、权限
+# 5、权限（closed）
 
 Q:
 
@@ -95,20 +95,33 @@ A:
 </property>
 ```
 
-法② hdfs-default.xml 中默认是开启权限检查的
+法② hdfs-site.xml 中默认是开启权限检查的
 
 ```
+# 配置 HDFS 权限
 <property>
     <name>dfs.permissions.enabled</name>
     <value>false</value>
+</property>
+# 配置 HDFS 超级用户
+<property>
+　　<name>dfs.permissions.superusergroup</name>
+　　<value>reptile</value>
+　　<description>配置超级用户组</description>
 </property>
 ```
 
 法③ 直接修改 /tmp 目录的权限设置
 
 ```
-$hadoop位置/hdfs dfs -chmod -R 755 /
+hdfs dfs -chmod -R 755 /文件  
 ```
+
+（3）hdfs 上没有 root 用户，也没有对应的文件夹 /user/root
+
+hdfs 默认以 root 身份去将作业写入 hdfs 文件系统中，对应的也就是 /user/root
+
+[(132条消息) 使用hive客户端的hdfs权限认证org.apache.hadoop.security.AccessControlException: Permission denied: user=root..._jzy3711的博客-CSDN博客_at org.apache.hadoop.security.usergroupinformation](https://blog.csdn.net/jzy3711/article/details/85003606)
 
 # 配置
 
@@ -148,8 +161,8 @@ FileOutputFormat.setOutputPath(job, new Path("file:///home/reptile/out")); // �
 ### ② hdfs 路径
 
 ```java
-FileInputFormat.addInputPath(job, new Path("hdfs://master:9870/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9870/out")); // 设置输出文件目录
+FileInputFormat.addInputPath(job, new Path("hdfs://master:9000/NBCorpus/Country/AUSTR")); // 设置输入文件目录
+FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
 ```
 
 ### ③ 设置实参
@@ -160,12 +173,62 @@ FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9870/out")); // 设�
 hdfs://master:9870/NBCorpus/Country/AUSTR hdfs://master:9870/out
 ```
 
-# 6、超出长度
+# 6、RPC 连接失败（closed）
 
 Q:
+
+第一种情况：端口号为 9870
+
+```java
+FileInputFormat.addInputPath(job, new Path("hdfs://master:9870/NBCorpus/Country/AUSTR")); // 设置输入文件目录
+FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9870/out")); // 设置输出文件目录
+```
 
 ```
 Exception in thread "main" org.apache.hadoop.ipc.RpcException: RPC response exceeds maximum data length
 ```
 
+第二种情况：端口号为 9000
+
+```java
+FileInputFormat.addInputPath(job, new Path("hdfs://master:9000/NBCorpus/Country/AUSTR")); // 设置输入文件目录
+FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
+```
+
+```
+Call From master/192.168.73.169 to master:9000 failed on connection exception: java.net.ConnectException: 拒绝连接
+```
+
 A:
+
+[(132条消息) Call From Master/192.168.47.100 to localhost:9000 failed on connection exception: java.net. 报错解决方法_SmarTongs的博客-CSDN博客](https://blog.csdn.net/weixin_44080131/article/details/120909028)
+
+[Hadoop之常用端口号_61%的博客-CSDN博客_hadoop端口号](https://blog.csdn.net/weixin_44484668/article/details/123238351)
+
+	hadoop3.x
+	HDFS	NameNode	内部通常端口：8020、9000、9820
+	HDFS	NameNode	对用户的查询端口：9870
+	Yarn查看任务运行情况的端口：8088
+	历史服务器：19888
+
+① 浏览器访问 localhost:9870 发现 Overview 中节点的名称是 master:9000（改名称在 core-site.xml 的 fs.defaultFS 字段中）
+
+② 输入文件和输出文件的目录中 hdfs 的 ip 改为 master，端口则是 9000（不是可视化查询界面的 9870）
+
+注：第二种情况的错误就是因为 ① 中 fs.defaultFS 的字段设置为了 localhost，主机名却是 master，不匹配
+
+# 7、查看 wordcount 输出文件
+
+A:
+
+```
+hdfs dfs -cat /out/part-r-00000
+```
+
+注：-ls 查看所有文件
+
+
+
+# Token
+
+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
