@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 public class WordCount {
     public static void main(String[] args) throws Exception{
         Configuration configuration = new Configuration(); // 读取 hadoop 配置信息
+
         String[] otherArgs = new GenericOptionsParser(configuration, args).getRemainingArgs();
         if (otherArgs.length != 2) {
             System.err.println("Usage: word count<int><out>");
@@ -24,8 +25,8 @@ public class WordCount {
         job.setJarByClass(WordCount.class); // 设置启动类, 如果要打包到集群上运行，必须添加该设置
         job.setMapperClass(TokenizerMapper.class); // 设置 Mapper 类
         job.setReducerClass(IntSumReducer.class); // 设置 Reducer 类
-        job.setOutputKeyClass(IntWritable.class); // 设置输出 key 的类型
-        job.setOutputValueClass(Text.class); // 设置输出值的类型
+        job.setOutputKeyClass(Text.class); // 设置输出 key 的类型
+        job.setOutputValueClass(IntWritable.class); // 设置输出值的类型
 
         FileInputFormat.addInputPath(job, new Path(otherArgs[0])); // 设置输入文件目录
         FileOutputFormat.setOutputPath(job, new Path(otherArgs[1])); // 设置输出文件目录
@@ -33,8 +34,8 @@ public class WordCount {
 //        FileInputFormat.addInputPath(job, new Path("file:////home/reptile/桌面/Bayes-MR/NBCorpus/Country/AUSTR")); // 设置输入文件目录
 //        FileOutputFormat.setOutputPath(job, new Path("file:///home/reptile/桌面/Bayes-MR/out")); // 设置输出文件目录
 
-//        FileInputFormat.addInputPath(job, new Path("hdfs://master:9870/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-//        FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9870/out")); // 设置输出文件目录
+//        FileInputFormat.addInputPath(job, new Path("hdfs://master:9000/NBCorpus/Country/AUSTR")); // 设置输入文件目录
+//        FileOutputFormat.setOutputPath(job, new Path("hdfs://master:90000/out")); // 设置输出文件目录
 
         System.exit(job.waitForCompletion(true)?0:1);
     }
