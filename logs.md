@@ -219,6 +219,8 @@ A:
 
 # 7、查看 wordcount 输出文件
 
+## （1）hdfs 查看
+
 A:
 
 ```
@@ -227,7 +229,76 @@ hdfs dfs -cat /out/part-r-00000
 
 注：-ls 查看所有文件
 
+## （2）文件逻辑位置查看
 
+[(132条消息) Hadoop中HDFS的文件到底存储在集群节点本地文件系统哪里_YuanOo。的博客-CSDN博客_hdfs文件存储在哪里](https://blog.csdn.net/weixin_43114954/article/details/115571939)
+
+**① 根据 hdfs 的可视化界面查看文件的 Block Information**
+
+Utilities 中的 Browse the file system
+
+```
+Block Information: Block x
+Block ID: 1073742399
+Block Pool ID: BP-2129610265-192.168.73.169-1666601721284 
+Generation Stamp: 1575
+Size: 3884
+Availability:
+	slave1
+	master
+```
+
+发现 namenode 和 datanode 都有该文件
+
+附：block 的作用举例
+
+```
+Block Information的下拉框中可以发信啊文件被分为几块，比如：
+发现该文件被分成了block0，block1两个块。
+原因是该文件大小大于128M，所以要被切割分为2个块。然后备份3份。
+
+备份在该Block x选项下的Availability中显示
+block0备份存储共3份在Slave1,Slave3以及Slave4 这3个datanode机器上。
+block1备份存储共3份在Slave2,Slave4以及Slave3 这3个datanode机器上。
+```
+
+**② 根据 hdfs-site.xml 文件确定 datanode 中文件的目录**
+
+```xml
+	<property>
+ 		<name>dfs.replication</name>
+ 		<value>3</value>
+ 	</property>
+	<property>
+		<name>dfs.datanode.data.dir</name>
+		<value>/home/reptile/BayesMR/hdfs/data</value>
+	</property>
+```
+
+ **③ 找到该目录下的 Block Pool ID 文件夹: BP-2129610265-192.168.73.169-1666601721284 **
+
+```
+drwxrwxr-x 4 reptile reptile 4096 10月 26 18:06 current
+-rw-rw-r-- 1 reptile reptile  166 10月 26 16:28 scanner.cursor
+drwxrwxr-x 2 reptile reptile 4096 10月 27 18:16 tmp
+```
+
+current 目录下有：
+
+```
+-rw-rw-r-- 1 reptile reptile   21 10月 26 18:06 dfsUsed
+drwxrwxr-x 3 reptile reptile 4096 10月 26 16:28 finalized
+drwxrwxr-x 2 reptile reptile 4096 10月 26 18:00 rbw
+-rw-rw-r-- 1 reptile reptile  146 10月 27 18:16 VERSION
+```
+
+finalized 目录下有 subdir0
+
+subdir0 的目录下有 subdir0, subdir1, subdir2
+
+三个目录下都是以 blk_ + 一串数字结尾的文件，这一串数字就是 ① 中的 Block ID: 1073742399
+
+最终在 subdir2 中找到了该文件：blk_1073742399
 
 # Token
 
