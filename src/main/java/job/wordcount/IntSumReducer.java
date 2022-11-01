@@ -7,10 +7,13 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.io.IOException;
 
 /**
- * public class Reducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
- * 四个泛型：KEYIN, VALUEIN, KEYOUT, VALUEOUT, 相同 key 合并，value 形成一个集合
- *    String ==> Text
- *    int ==> IntWritable
+ * @author XuYi
+ * @email 1968643693@qq.com
+ * @date 2022-11-01 16:06
+ * @description Reducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
+ *     四个泛型：KEYIN, VALUEIN, KEYOUT, VALUEOUT, 相同 key 合并，value 形成一个集合
+ *     String ==> Text
+ *     int ==> IntWritable
  */
 public class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
     private IntWritable result = new IntWritable();

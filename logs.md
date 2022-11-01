@@ -1,6 +1,35 @@
 整体流程：[IDEA配置Hadoop开发环境&编译运行WordCount程序 - bloglxc - 博客园 (cnblogs.com)](https://www.cnblogs.com/lxc1910/p/11798479.html)
 
-# 1.log4j（closed）
+# 0、格式化
+
+**（1）class**
+
+[Idea 设置自动注释，并解决自动注释的@param和@return为null的问题 - 码农教程 (manongjc.com)](http://www.manongjc.com/detail/26-hzdqrswgsogmgsi.html)
+
+设置 -> 编辑器 -> 文件和代码模板 -> 文件 -> class
+
+```
+/**
+ * @author XuYi
+ * @email 1968643693@qq.com
+ * @date ${YEAR}-${MONTH}-${DAY} ${HOUR}:${MINUTE}
+ * @description	${description}
+ */
+```
+
+**（2）method**
+
+[idea中Java文件方法的Javadoc注释（param去括号，return全类名） - 灰信网（软件开发博客聚合） (freesion.com)](https://www.freesion.com/article/28471511726/)
+
+设置 -> 编辑器 -> 实时模板（live template）-> MyJavaDoc（没找到）
+
+设置 -> 编辑器 -> 文件和代码模板 -> 代码 -> JavaDoc Method
+
+**（3）package-info**
+
+右键新建 pakcage-info.java
+
+# 1、log4j（closed）
 
 Q:
 
@@ -14,7 +43,7 @@ A:
 
 把v log4j.properties 文件加入工程内就可以了，一般存放于 target/classes 的文件夹下。
 
-# 2.windows 下 hadoop（closed）
+# 2、windows 下 hadoop（closed）
 
 Q:
 
@@ -170,7 +199,7 @@ FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设�
 在**运行/调试配置**里修改即可（框框下有一行灰色小字：应用程序的 CLI 实参）
 
 ```
-hdfs://master:9870/NBCorpus/Country/AUSTR hdfs://master:9870/out
+hdfs://master:9000/NBCorpus/Country/AUSTR hdfs://master:9000/out
 ```
 
 # 6、RPC 连接失败（closed）
@@ -275,7 +304,7 @@ block1备份存储共3份在Slave2,Slave4以及Slave3 这3个datanode机器上�
 	</property>
 ```
 
- **③ 找到该目录下的 Block Pool ID 文件夹: BP-2129610265-192.168.73.169-1666601721284 **
+**③ 找到该目录下的 Block Pool ID 文件夹: BP-2129610265-192.168.73.169-1666601721284 **
 
 ```
 drwxrwxr-x 4 reptile reptile 4096 10月 26 18:06 current
@@ -300,29 +329,41 @@ subdir0 的目录下有 subdir0, subdir1, subdir2
 
 最终在 subdir2 中找到了该文件：blk_1073742399
 
-# 8、Local Aggregation
+# 8、小文件过多
+
+
+
+# 9、数据集
+
+|        | AUSTR | CANA | 总计 |
+| :----: | :---: | :--: | :--: |
+| 训练集 |  200  | 200  | 400  |
+| 测试集 |  105  |  63  | 168  |
+|  总计  |  305  | 263  | 568  |
+
+# 10、Local Aggregation
 
 ## （1）官方 Combiner
 
 ```java
 class Mapper
 	method Map(docid a, doc d)
-		for all term t ∈ doc d do
-			Emit(term t, count 1)
-			
+        for all term t ∈ doc d do
+        Emit(term t, count 1)
+
 class Combiner
 	method Combine(term t, counts [c1, c2, . . .])
-		sum ← 0
-		for all count c ∈ counts [c1, c2, . . .] do
-			sum ← sum + c
-		Emit(term t, count sum)
+        sum ← 0
+        for all count c ∈ counts [c1, c2, . . .] do
+        sum ← sum + c
+        Emit(term t, count sum)
 
 class Reducer
 	method Reduce(term t, counts [c1, c2, . . .])
-		sum ← 0
-		for all count c ∈ counts [c1, c2, . . .] do
-			sum ← sum + c
-		Emit(term t, count sum)
+        sum ← 0
+        for all count c ∈ counts [c1, c2, . . .] do
+        sum ← sum + c
+        Emit(term t, count sum)
 ```
 
 Combiner 是利用 MapReduce API 提供的 Hook(钩子）。程序员只需要实现 Combiner 类的 Combine 方法，MapReduce 框架会自动调用自定义的 Combiner 类的 Combine 方法。
@@ -337,11 +378,11 @@ Combiner 是利用 MapReduce API 提供的 Hook(钩子）。程序员只需要�
 ```java
 class Mapper
 	method Map(docid a, doc d)
-		H ← new AssociativeArray // AssociativeArray可以是一个Java Map，里面存放是键值对，key是单词（term），value是单词出现次数
-		for all term t ∈ doc d do
-			H{t} ← H{t} + 1 // 统计整个文档d范围内，t出现的次数
-		for all term t ∈ H do
-			Emit(term t, count H{t})
+        H ← new AssociativeArray // AssociativeArray可以是一个Java Map，里面存放是键值对，key是单词（term），value是单词出现次数
+        for all term t ∈ doc d do
+        H{t} ← H{t} + 1 // 统计整个文档d范围内，t出现的次数
+        for all term t ∈ H do
+        Emit(term t, count H{t})
 ```
 
 Mapper 的输出是<t, t 在 d 中出现的次数>，注意：这时 map 输出的对比之前的 Mapper 输出的对大大减少了，因为此时的 t 是不重复的，考虑到一些频繁出现的单词如 the，In-Mapper  Combiner 大大减少了 Mapper 输出的键值对数量
@@ -351,13 +392,13 @@ Mapper 的输出是<t, t 在 d 中出现的次数>，注意：这时 map 输出�
 ```java
 class Mapper
 	method Initialize
-		H ← new AssociativeArray // 现在是在Initialize方法里初始化AssociativeArray Initialize方法就是setup方法，后面不再特别说明。这样可以在Map方法的多次调用间保存状态
-	method Map(docid a, doc d)
-		for all term t ∈ doc d do
-			H{t} ← H{t} + 1 // 由于每次Map调用传进来整个文档，因此现在是跨文档进行单词出现次数统计
-	method Close
-		for all term t ∈ H do
-			Emit(term t, count H{t}) // 现在是在Close方法里输出键值对，Close方法就是cleanup方法，后面不再特别说明。t是跨多个文档的不重复的t，因此In-Mapper Combiner进一步大大减少了Mapper输出的键值对数量
+            H ← new AssociativeArray // 现在是在Initialize方法里初始化AssociativeArray Initialize方法就是setup方法，后面不再特别说明。这样可以在Map方法的多次调用间保存状态
+        method Map(docid a, doc d)
+        for all term t ∈ doc d do
+        H{t} ← H{t} + 1 // 由于每次Map调用传进来整个文档，因此现在是跨文档进行单词出现次数统计
+        method Close
+        for all term t ∈ H do
+        Emit(term t, count H{t}) // 现在是在Close方法里输出键值对，Close方法就是cleanup方法，后面不再特别说明。t是跨多个文档的不重复的t，因此In-Mapper Combiner进一步大大减少了Mapper输出的键值对数量
 ```
 
 [(132条消息) MapReduce设计模式之In-mapper Combining_weixin_34345560的博客-CSDN博客](https://blog.csdn.net/weixin_34345560/article/details/93881621)

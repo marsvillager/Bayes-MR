@@ -3,6 +3,12 @@ package utils;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author XuYi
+ * @email 1968643693@qq.com
+ * @date 2022-11-01 15:43
+ * @description constant
+ */
 public class Const {
     private static String[] stopWordsArray = {"A", "a", "the", "an", "in",
             "on", "and", "The", "As", "as", "AND"};
@@ -10,12 +16,12 @@ public class Const {
     /**
      * 目录前缀
      */
-    public static final String BASE_PATH = "hdfs://localhost:9000";
+    public static final String BASE_PATH = "hdfs://master:9000";
 
     /**
      * wordcount 输出目录
      */
-     public static final String WORD_COUNT_OUTPUT_PATH = BASE_PATH + "/WORD_COUNT_JOB_OUTPUT";
+    public static final String WORD_COUNT_OUTPUT_PATH = BASE_PATH + "/WORD_COUNT_JOB_OUTPUT";
 
     /**
      * 训练集目录

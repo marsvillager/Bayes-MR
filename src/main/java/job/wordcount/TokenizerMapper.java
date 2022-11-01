@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 /**
- * public class Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
- * 四个泛型：KEYIN, VALUEIN, KEYOUT, VALUEOUT, <KEYIN, VALUEIN> ==> <KEYOUT, VALUEOUT>
- *     String ==> Text
- *     int ==> IntWritable
+ * @author XuYi
+ * @email 1968643693@qq.com
+ * @date 2022-11-01 15:59
+ * @description tokenizer the text and mapper
  */
 public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
     private final static IntWritable one = new IntWritable(1);

@@ -14,7 +14,19 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import utils.Const;
 
+/**
+ * @author XuYi
+ * @email 1968643693@qq.com
+ * @date 2022-11-01 16:48
+ * @description count words
+ */
 public class WordCount extends Configured implements Tool {
+    /**
+     *
+     * @param strings   args
+     * @return  success or failure
+     * @throws Exception
+     */
     @Override
     public int run(String[] strings) throws Exception {
         Configuration configuration = new Configuration(); // 读取 hadoop 配置信息
@@ -33,7 +45,7 @@ public class WordCount extends Configured implements Tool {
         job.setOutputKeyClass(Text.class); // 设置输出 key 的类型
         job.setOutputValueClass(IntWritable.class); // 设置输出值的类型
 
-        FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_INPUT_PATH)); // 设置输入文件目录
+        FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_INPUT_PATH + "/CANA")); // 设置输入文件目录
         FileOutputFormat.setOutputPath(job, new Path(Const.WORD_COUNT_OUTPUT_PATH)); // 设置输出文件目录
 
 //        FileInputFormat.addInputPath(job, new Path("file:////home/reptile/桌面/Bayes-MR/NBCorpus/Country/AUSTR")); // 设置输入文件目录
