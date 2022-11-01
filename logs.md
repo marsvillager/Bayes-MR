@@ -300,6 +300,102 @@ subdir0 的目录下有 subdir0, subdir1, subdir2
 
 最终在 subdir2 中找到了该文件：blk_1073742399
 
+# 8、Local Aggregation
+
+## （1）官方 Combiner
+
+```java
+class Mapper
+	method Map(docid a, doc d)
+		for all term t ∈ doc d do
+			Emit(term t, count 1)
+			
+class Combiner
+	method Combine(term t, counts [c1, c2, . . .])
+		sum ← 0
+		for all count c ∈ counts [c1, c2, . . .] do
+			sum ← sum + c
+		Emit(term t, count sum)
+
+class Reducer
+	method Reduce(term t, counts [c1, c2, . . .])
+		sum ← 0
+		for all count c ∈ counts [c1, c2, . . .] do
+			sum ← sum + c
+		Emit(term t, count sum)
+```
+
+Combiner 是利用 MapReduce API 提供的 Hook(钩子）。程序员只需要实现 Combiner 类的 Combine 方法，MapReduce 框架会自动调用自定义的 Combiner 类的 Combine 方法。
+
+缺点：
+
+- 无法控制Combiner的执行。例如，Hadoop 不保证 Combiner 被应用了多少次，甚至根本不保证它会被应用。在很多场合，这种不确定性是无法接受的
+- Combiner 减少了在网络中 shuffled 的中间数据量，但实际上并没有减少 Mapper 首先发出的键值对的数量
+
+## （2）In-Mapper Combining 设计模式
+
+```java
+class Mapper
+	method Map(docid a, doc d)
+		H ← new AssociativeArray // AssociativeArray可以是一个Java Map，里面存放是键值对，key是单词（term），value是单词出现次数
+		for all term t ∈ doc d do
+			H{t} ← H{t} + 1 // 统计整个文档d范围内，t出现的次数
+		for all term t ∈ H do
+			Emit(term t, count H{t})
+```
+
+Mapper 的输出是<t, t 在 d 中出现的次数>，注意：这时 map 输出的对比之前的 Mapper 输出的对大大减少了，因为此时的 t 是不重复的，考虑到一些频繁出现的单词如 the，In-Mapper  Combiner 大大减少了 Mapper 输出的键值对数量
+
+## （3）In-Mapper Combiner（进一步改进）
+
+```java
+class Mapper
+	method Initialize
+		H ← new AssociativeArray // 现在是在Initialize方法里初始化AssociativeArray Initialize方法就是setup方法，后面不再特别说明。这样可以在Map方法的多次调用间保存状态
+	method Map(docid a, doc d)
+		for all term t ∈ doc d do
+			H{t} ← H{t} + 1 // 由于每次Map调用传进来整个文档，因此现在是跨文档进行单词出现次数统计
+	method Close
+		for all term t ∈ H do
+			Emit(term t, count H{t}) // 现在是在Close方法里输出键值对，Close方法就是cleanup方法，后面不再特别说明。t是跨多个文档的不重复的t，因此In-Mapper Combiner进一步大大减少了Mapper输出的键值对数量
+```
+
+[(132条消息) MapReduce设计模式之In-mapper Combining_weixin_34345560的博客-CSDN博客](https://blog.csdn.net/weixin_34345560/article/details/93881621)
+
+## origin(no SequenceFile)
+
+```java
+public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
+    private final static IntWritable one = new IntWritable(1);
+    private Text word = new Text();
+
+    /**
+     *
+     * @param key   input
+     * @param value input
+     * @param context   用户代码与 MR 系统交互的上下文
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    public void map(Object key, Text value, Mapper<Object, Text, Text, IntWritable>.Context context)
+            throws IOException, InterruptedException {
+        StringTokenizer itr = new StringTokenizer(value.toString()); // 将字符串分成一个个的单词
+        while (itr.hasMoreTokens()) {
+            word.set(itr.nextToken()); // 将 token 写入 word
+            context.write(word, one); // token 出现一次, 就将 <token, 1> 写入 context, MR 将键值交给 Reducer 处理
+        }
+    }
+}
+```
+
+## imporve
+
+```
+
+```
+
 # Token
 
 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
+
