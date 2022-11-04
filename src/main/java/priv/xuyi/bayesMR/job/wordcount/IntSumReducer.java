@@ -1,4 +1,4 @@
-package job.wordcount;
+package priv.xuyi.bayesMR.job.wordcount;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -27,7 +27,7 @@ public class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable>
      * @throws InterruptedException
      */
     @Override
-    public void reduce(Text key, Iterable<IntWritable> values, Reducer<Text, IntWritable, Text,
+    protected void reduce(Text key, Iterable<IntWritable> values, Reducer<Text, IntWritable, Text,
             IntWritable>.Context context) throws IOException, InterruptedException {
         int sum = 0;
         for (IntWritable value : values) {

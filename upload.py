@@ -15,7 +15,7 @@ client_hdfs = InsecureClient('http://192.168.73.169:9870', user='reptile')
 client_hdfs.makedirs(base_path)
 
 
-def upload_train_data(path: str):
+def upload_train_data(path: str) -> None:
     """
     :param path: relative path of train data
     :return: none

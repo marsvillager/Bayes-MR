@@ -1,4 +1,4 @@
-package job.wordcount;
+package priv.xuyi.bayesMR.job.wordcount;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -26,7 +26,7 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
      * @throws InterruptedException
      */
     @Override
-    public void map(Object key, Text value, Mapper<Object, Text, Text, IntWritable>.Context context)
+    protected void map(Object key, Text value, Mapper<Object, Text, Text, IntWritable>.Context context)
             throws IOException, InterruptedException {
         StringTokenizer itr = new StringTokenizer(value.toString()); // 将字符串分成一个个的单词
         while (itr.hasMoreTokens()) {
