@@ -1,6 +1,6 @@
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.util.ToolRunner;
-import priv.xuyi.bayesMR.job.sequencefile.ConvertToSequenceFile;
+import priv.xuyi.bayesMR.job.sequencefile.SmallFilesToSequenceFileConverter;
 import priv.xuyi.bayesMR.utils.Const;
 
 /**
@@ -15,7 +15,7 @@ public class Main {
         configuration.set("INPUT_PATH", Const.TRAIN_DATA_INPUT_PATH);
         configuration.set("OUTPUT_PATH", Const.TRAIN_DATA_SEQUENCE_FILE_PATH);
 
-        ConvertToSequenceFile convert = new ConvertToSequenceFile();
+        SmallFilesToSequenceFileConverter convert = new SmallFilesToSequenceFileConverter();
         ToolRunner.run(configuration, convert, args);
     }
 }
