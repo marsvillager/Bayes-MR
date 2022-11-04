@@ -29,6 +29,24 @@
 
 右键新建 pakcage-info.java
 
+**（4）包的命名规范**
+
+[(133条消息) Java包名的命名规则_我顶得了的博客-CSDN博客_java包名命名规则](https://blog.csdn.net/qq_38534524/article/details/89441607)
+
+priv ： 独自完成，非公开，版权属于个人
+
+```
+    包名为priv.个人名.项目名.模块名
+```
+
+[(133条消息) java命名大小写规则,Java命名规范_卖星巴克杯子的人的博客-CSDN博客](https://blog.csdn.net/weixin_36302331/article/details/115390117)
+
+- 项目名全部小写
+- 包名全部小写
+- 类名首字母大写，如果类名由多个单词组成，每个单词的首字母都要大写
+- 变量名、方法名首字母小写，如果名称由多个单词组成，每个单词的首字母都要大写
+- 常量名全部大写
+
 # 1、log4j（closed）
 
 Q:
@@ -331,9 +349,192 @@ subdir0 的目录下有 subdir0, subdir1, subdir2
 
 # 8、小文件过多
 
+## （1）转化为 Sequence File
+
+setup 在 map 之前运行, 将 map 的 key 映射成：文档类型@文件名
+
+MR 处理 job：
+
+- key: CANA@487557newsML.txt
+- value: 487557newsML.txt的文件内容
+
+输入格式：自定义
+
+输出格式：`job.setOutputFormatClass(SequenceFileOutputFormat.class); // 原生类`
+
+## （2）多文件
+
+### ① 训练集
+
+hdfs://master:9000/TRAIN_DATA_FILE 其下有两类：AUSTR 和 CANA
+
+```mermaid
+flowchart TB
+	A(hdfs://master:9000) --> B(TRAIN_DATA_FILE)
+	B --> C(AUSTR)
+	B --> D(CANA)
+```
+
+### ② 测试集
+
+hdfs://master:9000/TEST_DATA_FILE
+
+## （3）类的实例化
+
+Q:
+
+由于 log 太长，控制台没有全部显示出来，而且信息太多，查看或者检索很不方便，所以输出到文件中：
+
+```java
+        String fileName="log.txt";
+        PrintStream out = new PrintStream(fileName);
+        System.setOut(out);
+```
+
+搜索 SequenceFileMapper，发现：
+
+```java
+22/11/04 17:06:44 WARN mapred.LocalJobRunner: job_local377893897_0001
+java.lang.Exception: java.lang.RuntimeException: java.lang.NoSuchMethodException: priv.xuyi.bayesMR.job.sequencefile.SmallFilesToSequenceFileConverter$SequenceFileMapper.<init>()
+	at org.apache.hadoop.mapred.LocalJobRunner$Job.runTasks(LocalJobRunner.java:492)
+	at org.apache.hadoop.mapred.LocalJobRunner$Job.run(LocalJobRunner.java:552)
+Caused by: java.lang.RuntimeException: java.lang.NoSuchMethodException: priv.xuyi.bayesMR.job.sequencefile.SmallFilesToSequenceFileConverter$SequenceFileMapper.<init>()
+	at org.apache.hadoop.util.ReflectionUtils.newInstance(ReflectionUtils.java:137)
+	at org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:760)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:348)
+	at org.apache.hadoop.mapred.LocalJobRunner$Job$MapTaskRunnable.run(LocalJobRunner.java:271)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:750)
+Caused by: java.lang.NoSuchMethodException: priv.xuyi.bayesMR.job.sequencefile.SmallFilesToSequenceFileConverter$SequenceFileMapper.<init>()
+	at java.lang.Class.getConstructor0(Class.java:3082)
+	at java.lang.Class.getDeclaredConstructor(Class.java:2178)
+	at org.apache.hadoop.util.ReflectionUtils.newInstance(ReflectionUtils.java:131)
+	... 8 more
+```
+
+A:[MapReduce错误之Error: java.lang.RuntimeException: java.lang.NoSuchMethodException的解决方法-百度网盘下载-Java自学者论坛 - Powered by Discuz! (javazxz.com)](https://www.javazxz.com/thread-5343-1-1.html)
+
+<font color=red>因为在 main 函数中是按照类名来调用方法的，所以要将 Map 内部类申明为静态的，即原因在于 SequenceFileMapper 并没有申明为 static，所以报错</font>
+
+## （4）FileSplit
+
+Q:
+
+搜索 WholeFileInputFormat，发现：
+
+```
+22/11/04 17:18:28 WARN mapred.LocalJobRunner: job_local705361015_0001
+java.lang.Exception: java.lang.ClassCastException: org.apache.hadoop.mapreduce.lib.input.FileSplit cannot be cast to org.apache.hadoop.mapred.FileSplit
+	at org.apache.hadoop.mapred.LocalJobRunner$Job.runTasks(LocalJobRunner.java:492)
+	at org.apache.hadoop.mapred.LocalJobRunner$Job.run(LocalJobRunner.java:552)
+Caused by: java.lang.ClassCastException: org.apache.hadoop.mapreduce.lib.input.FileSplit cannot be cast to org.apache.hadoop.mapred.FileSplit
+	at priv.xuyi.bayesMR.job.sequencefile.WholeFileRecordReader.initialize(WholeFileRecordReader.java:38)
+	at priv.xuyi.bayesMR.job.sequencefile.WholeFileInputFormat.createRecordReader(WholeFileInputFormat.java:47)
+	at org.apache.hadoop.mapred.MapTask$NewTrackingRecordReader.<init>(MapTask.java:528)
+	at org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:771)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:348)
+	at org.apache.hadoop.mapred.LocalJobRunner$Job$MapTaskRunnable.run(LocalJobRunner.java:271)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:750)
+```
+
+A: 导入的包错了
+
+[(134条消息) 报错org.apache.hadoop.mapreduce.lib.input.FileSplit cannot be cast to org.apache.hadoop.mapred.FileSpl_我是玄离大人的博客-CSDN博客](https://blog.csdn.net/qq_32599217/article/details/100029800)
+
+## （5）输出格式问题
+
+Q: 创建了输出文件夹，但里面没有内容
+
+```
+22/11/04 16:53:25 DEBUG mapred.LocalJobRunner: Starting mapper thread pool executor.
+22/11/04 16:53:25 DEBUG mapred.LocalJobRunner: Max local threads: 1
+22/11/04 16:53:25 DEBUG mapred.LocalJobRunner: Map tasks to process: 400
+22/11/04 16:53:25 INFO mapred.LocalJobRunner: Waiting for map tasks
+22/11/04 16:53:25 DEBUG concurrent.HadoopThreadPoolExecutor: beforeExecute in thread: LocalJobRunner Map Task Executor #0, runnable type: java.util.concurrent.FutureTask
+22/11/04 16:53:25 INFO mapred.LocalJobRunner: Starting task: attempt_local1916219546_0001_m_000000_0
+22/11/04 16:53:25 DEBUG mapred.SortedRanges: currentIndex 0   0:0
+22/11/04 16:53:25 DEBUG mapred.LocalJobRunner: mapreduce.cluster.local.dir for child : /tmp/hadoop-reptile/mapred/local/localRunner//reptile/jobcache/job_local1916219546_0001/attempt_local1916219546_0001_m_000000_0
+22/11/04 16:53:25 DEBUG mapred.Task: using new api for output committer
+22/11/04 16:53:25 DEBUG output.PathOutputCommitterFactory: Looking for committer factory for path hdfs://master:9000/TRAIN_DATA_SEQUENCE_FILE
+22/11/04 16:53:25 DEBUG output.PathOutputCommitterFactory: No scheme-specific factory defined in mapreduce.outputcommitter.factory.scheme.hdfs
+22/11/04 16:53:25 DEBUG output.PathOutputCommitterFactory: No output committer factory defined, defaulting to FileOutputCommitterFactory
+22/11/04 16:53:25 DEBUG output.PathOutputCommitterFactory: Creating FileOutputCommitter for path hdfs://master:9000/TRAIN_DATA_SEQUENCE_FILE and context TaskAttemptContextImpl{JobContextImpl{jobId=job_local1916219546_0001}; taskId=attempt_local1916219546_0001_m_000000_0, status=''}
+22/11/04 16:53:25 DEBUG output.PathOutputCommitter: Instantiating committer FileOutputCommitter{PathOutputCommitter{context=TaskAttemptContextImpl{JobContextImpl{jobId=job_local1916219546_0001}; taskId=attempt_local1916219546_0001_m_000000_0, status=''}; org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter@449ab020}; outputPath=null, workPath=null, algorithmVersion=0, skipCleanup=false, ignoreCleanupFailures=false} with output path hdfs://master:9000/TRAIN_DATA_SEQUENCE_FILE and job context TaskAttemptContextImpl{JobContextImpl{jobId=job_local1916219546_0001}; taskId=attempt_local1916219546_0001_m_000000_0, status=''}
+22/11/04 16:53:25 INFO output.FileOutputCommitter: File Output Committer Algorithm version is 2
+22/11/04 16:53:25 INFO output.FileOutputCommitter: FileOutputCommitter skip cleanup _temporary folders under output directory:false, ignore cleanup failures: false
+```
 
 
-# 9、数据集
+
+```
+22/11/04 15:39:06 INFO mapred.Task:  Using ResourceCalculatorProcessTree : [ ]
+22/11/04 15:39:06 INFO mapred.MapTask: Processing split: hdfs://master:9000/TRAIN_DATA_FILE/CANA/486838newsML.txt:0+1538
+22/11/04 15:39:06 DEBUG concurrent.ExecutorHelper: afterExecute in thread: LocalJobRunner Map Task Executor #0, runnable type: java.util.concurrent.FutureTask
+22/11/04 15:39:06 DEBUG concurrent.HadoopThreadPoolExecutor: beforeExecute in thread: LocalJobRunner Map Task Executor #0, runnable type: java.util.concurrent.FutureTask
+22/11/04 15:39:06 INFO mapred.LocalJobRunner: Starting task: attempt_local103077956_0001_m_000149_0
+22/11/04 15:39:06 DEBUG mapred.SortedRanges: currentIndex 0   0:0
+22/11/04 15:39:06 DEBUG mapred.LocalJobRunner: mapreduce.cluster.local.dir for child : /tmp/hadoop-reptile/mapred/local/localRunner//reptile/jobcache/job_local103077956_0001/attempt_local103077956_0001_m_000149_0
+22/11/04 15:39:06 DEBUG mapred.Task: using new api for output committer
+22/11/04 15:39:06 DEBUG output.PathOutputCommitterFactory: Looking for committer factory for path hdfs://master:9000/TRAIN_DATA_SEQUENCE_FILE
+22/11/04 15:39:06 DEBUG output.PathOutputCommitterFactory: No scheme-specific factory defined in mapreduce.outputcommitter.factory.scheme.hdfs
+22/11/04 15:39:06 DEBUG output.PathOutputCommitterFactory: No output committer factory defined, defaulting to FileOutputCommitterFactory
+22/11/04 15:39:06 DEBUG output.PathOutputCommitterFactory: Creating FileOutputCommitter for path hdfs://master:9000/TRAIN_DATA_SEQUENCE_FILE and context TaskAttemptContextImpl{JobContextImpl{jobId=job_local103077956_0001}; taskId=attempt_local103077956_0001_m_000149_0, status=''}
+22/11/04 15:39:06 DEBUG output.PathOutputCommitter: Instantiating committer FileOutputCommitter{PathOutputCommitter{context=TaskAttemptContextImpl{JobContextImpl{jobId=job_local103077956_0001}; taskId=attempt_local103077956_0001_m_000149_0, status=''}; org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter@475f04f7}; outputPath=null, workPath=null, algorithmVersion=0, skipCleanup=false, ignoreCleanupFailures=false} with output path hdfs://master:9000/TRAIN_DATA_SEQUENCE_FILE and job context TaskAttemptContextImpl{JobContextImpl{jobId=job_local103077956_0001}; taskId=attempt_local103077956_0001_m_000149_0, status=''}
+22/11/04 15:39:06 INFO output.FileOutputCommitter: File Output Committer Algorithm version is 2
+22/11/04 15:39:06 INFO output.FileOutputCommitter: FileOutputCommitter skip cleanup _temporary folders under output directory:false, ignore cleanup failures: false
+```
+
+# 9、常量
+
+```mermaid
+flowchart TB
+	A(hdfs://master:9000) --> B(TRAIN_DATA_FILE)
+	B --> C(AUSTR)
+	B --> D(CANA)
+	A --> E(TEST_DATA_FILE)
+	A --> F(TRAIN_DATA_SEQUENCE_FILE)
+	A --> G(TEST_DATA_SEQUENCE_FILE)
+```
+
+|             常量              |                 具体值                  |               含义                |
+| :---------------------------: | :-------------------------------------: | :-------------------------------: |
+|           BASE_PATH           |           hdfs://master:9000            |              根目录               |
+|    WORD_COUNT_OUTPUT_PATH     |  BASE_PATH + "/WORD_COUNT_JOB_OUTPUT"   |          word count 结果          |
+|     TRAIN_DATA_INPUT_PATH     |     BASE_PATH + "/TRAIN_DATA_FILE"      |        训练集原始输入目录         |
+|     TEST_DATA_INPUT_PATH      |      BASE_PATH + "/TEST_DATA_FILE"      |        测试集原始输入目录         |
+| TRAIN_DATA_SEQUENCE_FILE_PATH | BASE_PATH + "/TRAIN_DATA_SEQUENCE_FILE" | 训练集整合为sequence file后的目录 |
+| TEST_DATA_SEQUENCE_FILE_PATH  | BASE_PATH + "/TEST_DATA_SEQUENCE_FILE"  | 测试集整合为sequence file后的目录 |
+|                               |                                         |                                   |
+|                               |                                         |                                   |
+
+## （1）word count
+
+```java
+FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_INPUT_PATH + "/CANA")); // 设置输入文件目录
+FileOutputFormat.setOutputPath(job, new Path(Const.WORD_COUNT_OUTPUT_PATH)); // 设置输出文件目录
+```
+
+## （2）convert to sequence file
+
+### ① 训练集
+
+```java
+    configuration.set("INPUT_PATH", Const.TRAIN_DATA_INPUT_PATH);
+    configuration.set("OUTPUT_PATH", Const.TRAIN_DATA_SEQUENCE_FILE_PATH);
+```
+
+### ② 测试集
+
+
+
+# 10、数据集
 
 |        | AUSTR | CANA | 总计 |
 | :----: | :---: | :--: | :--: |
@@ -341,7 +542,7 @@ subdir0 的目录下有 subdir0, subdir1, subdir2
 | 测试集 |  105  |  63  | 168  |
 |  总计  |  305  | 263  | 568  |
 
-# 10、Local Aggregation
+# 11、Local Aggregation
 
 ## （1）官方 Combiner
 

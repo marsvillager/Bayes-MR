@@ -8,7 +8,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.ByteWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.FileSplit;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -27,9 +27,9 @@ import java.io.PrintStream;
  * @description convert input files in .txt format to sequence files, key of sequence files: type@file_name
  */
 public class SmallFilesToSequenceFileConverter extends Configured implements Tool { // 实现 Tool 接口，利用 ToolRunner 来运行这个 MapReduce 程序
-    // 利用嵌套类实现 SequenceFileMapper，继承 Mappper 类
-    class SequenceFileMapper extends Mapper<NullWritable, ByteWritable, Text, ByteWritable> {
-        private Text filenameKey; // 被打包的小文件名作为 key，表示为 Text 对象
+    // 利用嵌套类实现 SequenceFileMapper，继承 Mapper 类
+    static class SequenceFileMapper extends Mapper<NullWritable, ByteWritable, Text, ByteWritable> {
+        private Text filenameKey = new Text(); // 被打包的小文件名作为 key，表示为 Text 对象
 
         /**
          * @param context
@@ -116,7 +116,6 @@ public class SmallFilesToSequenceFileConverter extends Configured implements Too
         configuration.set("INPUT_PATH", Const.TRAIN_DATA_INPUT_PATH);
         configuration.set("OUTPUT_PATH", Const.TRAIN_DATA_SEQUENCE_FILE_PATH);
         int run = ToolRunner.run(configuration, new SmallFilesToSequenceFileConverter(), args);
-        System.out.println("ConvertToSequenceFile end");
         System.exit(run);
     }
 }

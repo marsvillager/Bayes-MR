@@ -19,7 +19,7 @@ import java.io.IOException;
  */
 public class WholeFileInputFormat extends FileInputFormat<NullWritable, BytesWritable> {
     static {
-        System.out.println("start InputFormat of ConvertToSequenceFile");
+        System.out.println("start WholeFileInputFormat");
     }
 
     /**
