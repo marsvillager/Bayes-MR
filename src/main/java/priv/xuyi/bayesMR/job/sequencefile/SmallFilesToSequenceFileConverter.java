@@ -5,7 +5,7 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.ByteWritable;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
@@ -28,7 +28,7 @@ import java.io.PrintStream;
  */
 public class SmallFilesToSequenceFileConverter extends Configured implements Tool { // 实现 Tool 接口，利用 ToolRunner 来运行这个 MapReduce 程序
     // 利用嵌套类实现 SequenceFileMapper，继承 Mapper 类
-    static class SequenceFileMapper extends Mapper<NullWritable, ByteWritable, Text, ByteWritable> {
+    static class SequenceFileMapper extends Mapper<NullWritable, BytesWritable, Text, BytesWritable> {
         private Text filenameKey = new Text(); // 被打包的小文件名作为 key，表示为 Text 对象
 
         /**
@@ -37,7 +37,7 @@ public class SmallFilesToSequenceFileConverter extends Configured implements Too
          * @throws InterruptedException
          */
         @Override
-        protected void setup(Mapper<NullWritable, ByteWritable, Text, ByteWritable>.Context context) throws IOException, InterruptedException {
+        protected void setup(Mapper<NullWritable, BytesWritable, Text, BytesWritable>.Context context) throws IOException, InterruptedException {
             System.out.println("start SequenceFileMapper's setup()");
             InputSplit split = context.getInputSplit(); // 从 context 获取 split
             String docType = ((FileSplit) split).getPath().getParent().getName();
@@ -53,7 +53,7 @@ public class SmallFilesToSequenceFileConverter extends Configured implements Too
          * @throws InterruptedException
          */
         @Override
-        protected void map(NullWritable key, ByteWritable value, Mapper<NullWritable, ByteWritable, Text, ByteWritable>.Context context) throws IOException, InterruptedException {
+        protected void map(NullWritable key, BytesWritable value, Mapper<NullWritable, BytesWritable, Text, BytesWritable>.Context context) throws IOException, InterruptedException {
             // key: CANA@487557newsML.txt
             // value: 487557newsML.txt的文件内容
             System.out.println("start SequenceFileMapper's map()");
@@ -93,7 +93,7 @@ public class SmallFilesToSequenceFileConverter extends Configured implements Too
         job.setMapperClass(SequenceFileMapper.class); // 设置 Mapper 类
 
         job.setOutputKeyClass(Text.class); // 设置输出 key 的类型
-        job.setOutputValueClass(ByteWritable.class); // 设置输出值的类型
+        job.setOutputValueClass(BytesWritable.class); // 设置输出值的类型
         job.setInputFormatClass(WholeFileInputFormat.class); // 自定义
         job.setOutputFormatClass(SequenceFileOutputFormat.class); // 原生类
 
@@ -107,10 +107,10 @@ public class SmallFilesToSequenceFileConverter extends Configured implements Too
     }
 
     public static void main(String[] args) throws Exception{
-        // sout log
-        String fileName="log.txt";
-        PrintStream out = new PrintStream(fileName);
-        System.setOut(out);
+        // print log to .txt file
+//        String fileName="log.txt";
+//        PrintStream out = new PrintStream(fileName);
+//        System.setOut(out);
 
         Configuration configuration = new Configuration();
         configuration.set("INPUT_PATH", Const.TRAIN_DATA_INPUT_PATH);

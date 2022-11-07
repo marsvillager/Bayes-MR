@@ -202,14 +202,14 @@ windows 运行脚本问题：`urllib3.exceptions.NewConnectionError: <urllib3.co
 
 ```java
 FileInputFormat.addInputPath(job, new Path("file:////home/reptile/桌面/Bayes-MR/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-FileOutputFormat.setOutputPath(job, new Path("file:///home/reptile/out")); // 设置输出文件目录
+        FileOutputFormat.setOutputPath(job, new Path("file:///home/reptile/out")); // 设置输出文件目录
 ```
 
 ### ② hdfs 路径
 
 ```java
 FileInputFormat.addInputPath(job, new Path("hdfs://master:9000/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
+        FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
 ```
 
 ### ③ 设置实参
@@ -228,7 +228,7 @@ Q:
 
 ```java
 FileInputFormat.addInputPath(job, new Path("hdfs://master:9870/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9870/out")); // 设置输出文件目录
+        FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9870/out")); // 设置输出文件目录
 ```
 
 ```
@@ -239,7 +239,7 @@ Exception in thread "main" org.apache.hadoop.ipc.RpcException: RPC response exce
 
 ```java
 FileInputFormat.addInputPath(job, new Path("hdfs://master:9000/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
+        FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
 ```
 
 ```
@@ -313,13 +313,13 @@ block1备份存储共3份在Slave2,Slave4以及Slave3 这3个datanode机器上�
 
 ```xml
 	<property>
- 		<name>dfs.replication</name>
- 		<value>3</value>
- 	</property>
-	<property>
-		<name>dfs.datanode.data.dir</name>
-		<value>/home/reptile/BayesMR/hdfs/data</value>
-	</property>
+    <name>dfs.replication</name>
+    <value>3</value>
+</property>
+<property>
+<name>dfs.datanode.data.dir</name>
+<value>/home/reptile/BayesMR/hdfs/data</value>
+</property>
 ```
 
 **③ 找到该目录下的 Block Pool ID 文件夹: BP-2129610265-192.168.73.169-1666601721284 **
@@ -356,7 +356,7 @@ setup 在 map 之前运行, 将 map 的 key 映射成：文档类型@文件名
 MR 处理 job：
 
 - key: CANA@487557newsML.txt
-- value: 487557newsML.txt的文件内容
+- value: 487557newsML.txt 的文件内容（byte 格式）
 
 输入格式：自定义
 
@@ -415,7 +415,7 @@ Caused by: java.lang.NoSuchMethodException: priv.xuyi.bayesMR.job.sequencefile.S
 	... 8 more
 ```
 
-A:[MapReduce错误之Error: java.lang.RuntimeException: java.lang.NoSuchMethodException的解决方法-百度网盘下载-Java自学者论坛 - Powered by Discuz! (javazxz.com)](https://www.javazxz.com/thread-5343-1-1.html)
+A: [MapReduce错误之Error: java.lang.RuntimeException: java.lang.NoSuchMethodException的解决方法-百度网盘下载-Java自学者论坛 - Powered by Discuz! (javazxz.com)](https://www.javazxz.com/thread-5343-1-1.html)
 
 <font color=red>因为在 main 函数中是按照类名来调用方法的，所以要将 Map 内部类申明为静态的，即原因在于 SequenceFileMapper 并没有申明为 static，所以报错</font>
 
@@ -448,7 +448,7 @@ A: 导入的包错了
 
 [(134条消息) 报错org.apache.hadoop.mapreduce.lib.input.FileSplit cannot be cast to org.apache.hadoop.mapred.FileSpl_我是玄离大人的博客-CSDN博客](https://blog.csdn.net/qq_32599217/article/details/100029800)
 
-## （5）输出格式问题
+## （5）输出格式问题？（实际没有报错就 ok？）
 
 Q: 创建了输出文件夹，但里面没有内容
 
@@ -491,6 +491,12 @@ Q: 创建了输出文件夹，但里面没有内容
 22/11/04 15:39:06 INFO output.FileOutputCommitter: FileOutputCommitter skip cleanup _temporary folders under output directory:false, ignore cleanup failures: false
 ```
 
+A: 代码比对工具发现，还是导入的包错了，不是 ByteWritable 而是 BytesWritable
+
+## （6）总结
+
+**☆ 采用了以上（3）（4）（5）这几个问题的 answer，才解决了（5）中疑似是问题的问题，只能说还是要细心，以及思考解决问题的办法不能死板，如果就揪着（5）的问题，那么我永远也解决不了问题。**
+
 # 9、常量
 
 ```mermaid
@@ -518,7 +524,7 @@ flowchart TB
 
 ```java
 FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_INPUT_PATH + "/CANA")); // 设置输入文件目录
-FileOutputFormat.setOutputPath(job, new Path(Const.WORD_COUNT_OUTPUT_PATH)); // 设置输出文件目录
+        FileOutputFormat.setOutputPath(job, new Path(Const.WORD_COUNT_OUTPUT_PATH)); // 设置输出文件目录
 ```
 
 ## （2）convert to sequence file
@@ -527,7 +533,7 @@ FileOutputFormat.setOutputPath(job, new Path(Const.WORD_COUNT_OUTPUT_PATH)); // 
 
 ```java
     configuration.set("INPUT_PATH", Const.TRAIN_DATA_INPUT_PATH);
-    configuration.set("OUTPUT_PATH", Const.TRAIN_DATA_SEQUENCE_FILE_PATH);
+        configuration.set("OUTPUT_PATH", Const.TRAIN_DATA_SEQUENCE_FILE_PATH);
 ```
 
 ### ② 测试集
