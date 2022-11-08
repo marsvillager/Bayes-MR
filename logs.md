@@ -209,7 +209,7 @@ FileInputFormat.addInputPath(job, new Path("file:////home/reptile/桌面/Bayes-M
 
 ```java
 FileInputFormat.addInputPath(job, new Path("hdfs://master:9000/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-        FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
+FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
 ```
 
 ### ③ 设置实参
@@ -228,7 +228,7 @@ Q:
 
 ```java
 FileInputFormat.addInputPath(job, new Path("hdfs://master:9870/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-        FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9870/out")); // 设置输出文件目录
+FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9870/out")); // 设置输出文件目录
 ```
 
 ```
@@ -239,7 +239,7 @@ Exception in thread "main" org.apache.hadoop.ipc.RpcException: RPC response exce
 
 ```java
 FileInputFormat.addInputPath(job, new Path("hdfs://master:9000/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-        FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
+FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
 ```
 
 ```
@@ -313,13 +313,13 @@ block1备份存储共3份在Slave2,Slave4以及Slave3 这3个datanode机器上�
 
 ```xml
 	<property>
-    <name>dfs.replication</name>
-    <value>3</value>
-</property>
-<property>
-<name>dfs.datanode.data.dir</name>
-<value>/home/reptile/BayesMR/hdfs/data</value>
-</property>
+ 		<name>dfs.replication</name>
+ 		<value>3</value>
+ 	</property>
+	<property>
+		<name>dfs.datanode.data.dir</name>
+		<value>/home/reptile/BayesMR/hdfs/data</value>
+	</property>
 ```
 
 **③ 找到该目录下的 Block Pool ID 文件夹: BP-2129610265-192.168.73.169-1666601721284 **
@@ -377,7 +377,14 @@ flowchart TB
 
 ### ② 测试集
 
-hdfs://master:9000/TEST_DATA_FILE
+hdfs://master:9000/TEST_DATA_FILE 其下有两类：AUSTR 和 CANA
+
+```mermaid
+flowchart TB
+	A(hdfs://master:9000) --> B(TEST_DATA_FILE)
+	B --> C(AUSTR)
+	B --> D(CANA)
+```
 
 ## （3）类的实例化
 
@@ -448,6 +455,25 @@ A: 导入的包错了
 
 [(134条消息) 报错org.apache.hadoop.mapreduce.lib.input.FileSplit cannot be cast to org.apache.hadoop.mapred.FileSpl_我是玄离大人的博客-CSDN博客](https://blog.csdn.net/qq_32599217/article/details/100029800)
 
+相似问题：
+
+不是
+
+```
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.SequenceFileInputFormat;
+import org.apache.hadoop.mapred.SequenceFileOutputFormat;
+```
+
+而是
+
+```
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
+```
+
 ## （5）输出格式问题？（实际没有报错就 ok？）
 
 Q: 创建了输出文件夹，但里面没有内容
@@ -505,11 +531,13 @@ flowchart TB
 	B --> C(AUSTR)
 	B --> D(CANA)
 	A --> E(TEST_DATA_FILE)
+	E --> AUSTR
+	E --> CANA
 	A --> F(TRAIN_DATA_SEQUENCE_FILE)
 	A --> G(TEST_DATA_SEQUENCE_FILE)
 ```
 
-|             常量              |                 具体值                  |               含义                |
+|        数据相关的常量         |                 具体值                  |               含义                |
 | :---------------------------: | :-------------------------------------: | :-------------------------------: |
 |           BASE_PATH           |           hdfs://master:9000            |              根目录               |
 |    WORD_COUNT_OUTPUT_PATH     |  BASE_PATH + "/WORD_COUNT_JOB_OUTPUT"   |          word count 结果          |
@@ -517,14 +545,35 @@ flowchart TB
 |     TEST_DATA_INPUT_PATH      |      BASE_PATH + "/TEST_DATA_FILE"      |        测试集原始输入目录         |
 | TRAIN_DATA_SEQUENCE_FILE_PATH | BASE_PATH + "/TRAIN_DATA_SEQUENCE_FILE" | 训练集整合为sequence file后的目录 |
 | TEST_DATA_SEQUENCE_FILE_PATH  | BASE_PATH + "/TEST_DATA_SEQUENCE_FILE"  | 测试集整合为sequence file后的目录 |
-|                               |                                         |                                   |
-|                               |                                         |                                   |
+
+```mermaid
+flowchart TB
+	A(hdfs://master:9000) --> B(GET_DOC_COUNT_JOB_OUTPUT)
+	A --> GET_SINGLE_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT
+	A --> GET_TOTAL_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT
+	A --> GET_NAIVE_BAYES_RESULT_JOB_OUTPUT_PATH
+```
+
+|                   公式相关的常量                    |                            具体值                            |                      含义                      |
+| :-------------------------------------------------: | :----------------------------------------------------------: | :--------------------------------------------: |
+|     GET_DOC_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH     |           BASE_PATH + "/GET_DOC_COUNT_JOB_OUTPUT"            |              获取文档数的输出目录              |
+| GET_SINGLE_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH | BASE_PATH + "/GET_SINGLE_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT" | 获取每个文档类型中每个单词出现的次数的输出目录 |
+| GET_TOTAL_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH  | BASE_PATH + "/GET_TOTAL_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT" |      获取每个文档种类的总单词数的输出目录      |
+|       GET_NAIVE_BAYES_RESULT_JOB_OUTPUT_PATH        |       BASE_PATH + "/GET_NAIVE_BAYES_RESULT_JOB_OUTPUT"       |           测试集的贝叶斯分类结果目录           |
+
+
+
+|              其它               |           具体值            |         含义         |
+| :-----------------------------: | :-------------------------: | :------------------: |
+| HADOOP_DEFAULT_OUTPUT_FILE_NAME | BASE_PATH + "/part-r-00000" | 处理结果默认存放目录 |
+|          DOC_TYPE_LIST          |        "AUSTR@CANA"         |  文档类别（@隔开）   |
+|         STOP_WORDS_LIST         |             略              |        停用词        |
 
 ## （1）word count
 
 ```java
 FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_INPUT_PATH + "/CANA")); // 设置输入文件目录
-        FileOutputFormat.setOutputPath(job, new Path(Const.WORD_COUNT_OUTPUT_PATH)); // 设置输出文件目录
+FileOutputFormat.setOutputPath(job, new Path(Const.WORD_COUNT_OUTPUT_PATH)); // 设置输出文件目录
 ```
 
 ## （2）convert to sequence file
@@ -533,10 +582,110 @@ FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_INPUT_PATH + "/CANA"
 
 ```java
     configuration.set("INPUT_PATH", Const.TRAIN_DATA_INPUT_PATH);
-        configuration.set("OUTPUT_PATH", Const.TRAIN_DATA_SEQUENCE_FILE_PATH);
+    configuration.set("OUTPUT_PATH", Const.TRAIN_DATA_SEQUENCE_FILE_PATH);
 ```
 
 ### ② 测试集
+
+```java
+    configuration.set("INPUT_PATH", Const.TEST_DATA_INPUT_PATH);
+    configuration.set("OUTPUT_PATH", Const.TEST_DATA_SEQUENCE_FILE_PATH);
+```
+
+## （3）p(class)统计各类别文档数目
+
+```java
+FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_SEQUENCE_FILE_PATH));
+FileOutputFormat.setOutputPath(job, new Path(Const.GET_DOC_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH));
+```
+
+### ① map
+
+            key: CANA@487557newsML.txt
+            value: 487557newsML.txt的文件内容
+
+### ② reduce
+
+            key: CANA
+            values: [1,1,1,1,1.....,1,1,1]
+
+## （4）p(term|class)统计单词出现次数
+
+```java
+FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_SEQUENCE_FILE_PATH));
+FileOutputFormat.setOutputPath(job, new Path(Const.GET_SINGLE_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH));
+```
+
+### ① map
+
+            key: CANA@487557newsML.txt
+            value: 487557newsML.txt的文件内容
+
+### ② reduce
+
+            key: CANA@hello
+            value: [1,1,1,1,1....,1,1,1]
+
+## （5）p(term|class)各类别单词总数目
+
+注：输入变成（4）中的输出，即直接对单词数相加
+
+```java
+FileInputFormat.addInputPath(job, new Path(Const.GET_SINGLE_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH));
+FileOutputFormat.setOutputPath(job, new Path(Const.GET_TOTAL_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH));
+```
+
+### ① map
+
+            key: CANA@hello
+            value: 13 表示hello在CANA文档类别中出现了13次
+
+### ② reduce
+
+            key: CANA
+            values: [13,1,1,24,3,7....12,3,6]
+
+## （6）综合使用：对测试集使用贝叶斯公式
+
+```java
+FileInputFormat.addInputPath(job, new Path(Const.TEST_DATA_SEQUENCE_FILE_PATH));
+FileOutputFormat.setOutputPath(job, new Path(Const.GET_NAIVE_BAYES_RESULT_JOB_OUTPUT_PATH));
+```
+
+|        分析相关的变量         |         类型         |               含义               |
+| :---------------------------: | :------------------: | :------------------------------: |
+|          docTypeList          |       String[]       |           文档种类列表           |
+|   eachWordCountInDocTypeMap   | Map<String, Integer> |   每个类别中每个单词出现的次数   |
+|   allWordCountInDocTypeMap    | Map<String, Integer> |   每个类别中所有单词出现的次数   |
+|  docTypePriorProbabilityMap   | Map<String, Double>  |   每个文档 Ci 的先验概率 P(Ci)   |
+| wordConditionalProbabilityMap | Map<String, Double>  | 每个单词 Wi 的条件概率 P(Wi\|Ci) |
+|      docPredictResultMap      | Map<String, String>  |        每个文档的预测结果        |
+
+### ① map 的 setup（before map）
+
+- class 以 @ 为间隔符号：docTypeList
+
+```java
+docTypeList = configuration.get("DOC_TYPE_LIST").split("@");
+```
+
+- （3）中的 GET_DOC_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH
+
+    - 直接得到之前处理好的每个文档类型的总单词数，存入 eachWordCountInDocTypeMap
+    - 举例：
+
+  ```
+          key: CANA
+          value: 300
+  ```
+
+    - 一个循环计算总单词数，最后计算文档 Ci 的先验概率：P(Ci) = 类型 Ci 的文档数 / 总文档数？：docTypePriorProbabilityMap（eachWordCountInDocTypeMap 中每一个类别的数目除以 eachWordCountInDocTypeMap 的总数）
+
+### ② map
+
+
+
+### ③ reduce
 
 
 
@@ -548,7 +697,7 @@ FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_INPUT_PATH + "/CANA"
 | 测试集 |  105  |  63  | 168  |
 |  总计  |  305  | 263  | 568  |
 
-# 11、Local Aggregation
+# Other、Local Aggregation
 
 ## （1）官方 Combiner
 
