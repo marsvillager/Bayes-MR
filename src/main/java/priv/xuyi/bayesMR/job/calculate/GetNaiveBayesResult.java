@@ -34,6 +34,8 @@ public class GetNaiveBayesResult extends Configured implements Tool {
 
     private static String[] docTypeList; // 文档种类列表
 
+    private static Map<String, Integer> eachDocTypeDocCountMap = new HashMap<String, Integer>(10); // 每个类型的文档总数
+
     private static Map<String, Integer> eachWordCountInDocTypeMap = new HashMap<>(); // 每个类别中每个单词出现的次数
 
     private static Map<String, Integer> allWordCountInDocTypeMap = new HashMap<>(); // 每个类别中所有单词出现的次数
@@ -74,7 +76,6 @@ public class GetNaiveBayesResult extends Configured implements Tool {
             // 读取sequence_file
             SequenceFile.Reader reader = null;
             double totalDocCount = 0;
-            Map<String, Integer> eachDocTypeDocCountMap = new HashMap<String, Integer>(10);
             try {
                 //从sequence_file中读取每个文档类型中的总单词数
                 SequenceFile.Reader.Option option = SequenceFile.Reader.file(getDocCountFromDocTypePath);
@@ -144,7 +145,7 @@ public class GetNaiveBayesResult extends Configured implements Tool {
             // key: CANA@487557newsML.txt
             // value: 487557newsML.txt的文件内容
 
-            //计算文档d为类别Ci的条件概率：P(d|Ci)= ∏P(Wi|Ci)
+            // 计算文档d为类别Ci的条件概率：P(d|Ci)= ∏P(Wi|Ci)
             // 将sequence_file中的bytes读成字符串
             String content = new String(value.getBytes());
             String[] wordArray = content.split("\\s+");
@@ -163,7 +164,7 @@ public class GetNaiveBayesResult extends Configured implements Tool {
                         log.debug("过滤无用词：" + word);
                     }
                 }
-                // 再加上文档Ci的条件概率
+                // 再加上文档Ci的先验概率
                 conditionalProbability += Math.log10(docTypePriorProbabilityMap.get(docTypeName));
                 this.conditionalProbabilityValue.set(docTypeName + "@" + conditionalProbability);
                 context.write(key, conditionalProbabilityValue);

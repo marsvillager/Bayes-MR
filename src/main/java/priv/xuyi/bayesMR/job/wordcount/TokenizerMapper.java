@@ -5,6 +5,9 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
@@ -28,6 +31,12 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
     @Override
     protected void map(Object key, Text value, Mapper<Object, Text, Text, IntWritable>.Context context)
             throws IOException, InterruptedException {
+
+        // print log to .txt file
+        String fileName="log.txt";
+        PrintStream out = new PrintStream(fileName);
+        System.setOut(out);
+
         StringTokenizer itr = new StringTokenizer(value.toString()); // 将字符串分成一个个的单词
         while (itr.hasMoreTokens()) {
             word.set(itr.nextToken()); // 将 token 写入 word

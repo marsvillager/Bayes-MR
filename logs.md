@@ -209,7 +209,7 @@ FileInputFormat.addInputPath(job, new Path("file:////home/reptile/桌面/Bayes-M
 
 ```java
 FileInputFormat.addInputPath(job, new Path("hdfs://master:9000/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
+        FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
 ```
 
 ### ③ 设置实参
@@ -228,7 +228,7 @@ Q:
 
 ```java
 FileInputFormat.addInputPath(job, new Path("hdfs://master:9870/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9870/out")); // 设置输出文件目录
+        FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9870/out")); // 设置输出文件目录
 ```
 
 ```
@@ -239,7 +239,7 @@ Exception in thread "main" org.apache.hadoop.ipc.RpcException: RPC response exce
 
 ```java
 FileInputFormat.addInputPath(job, new Path("hdfs://master:9000/NBCorpus/Country/AUSTR")); // 设置输入文件目录
-FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
+        FileOutputFormat.setOutputPath(job, new Path("hdfs://master:9000/out")); // 设置输出文件目录
 ```
 
 ```
@@ -313,13 +313,13 @@ block1备份存储共3份在Slave2,Slave4以及Slave3 这3个datanode机器上�
 
 ```xml
 	<property>
- 		<name>dfs.replication</name>
- 		<value>3</value>
- 	</property>
-	<property>
-		<name>dfs.datanode.data.dir</name>
-		<value>/home/reptile/BayesMR/hdfs/data</value>
-	</property>
+  <name>dfs.replication</name>
+  <value>3</value>
+</property>
+<property>
+<name>dfs.datanode.data.dir</name>
+<value>/home/reptile/BayesMR/hdfs/data</value>
+</property>
 ```
 
 **③ 找到该目录下的 Block Pool ID 文件夹: BP-2129610265-192.168.73.169-1666601721284 **
@@ -402,24 +402,24 @@ Q:
 
 ```java
 22/11/04 17:06:44 WARN mapred.LocalJobRunner: job_local377893897_0001
-java.lang.Exception: java.lang.RuntimeException: java.lang.NoSuchMethodException: priv.xuyi.bayesMR.job.sequencefile.SmallFilesToSequenceFileConverter$SequenceFileMapper.<init>()
-	at org.apache.hadoop.mapred.LocalJobRunner$Job.runTasks(LocalJobRunner.java:492)
-	at org.apache.hadoop.mapred.LocalJobRunner$Job.run(LocalJobRunner.java:552)
-Caused by: java.lang.RuntimeException: java.lang.NoSuchMethodException: priv.xuyi.bayesMR.job.sequencefile.SmallFilesToSequenceFileConverter$SequenceFileMapper.<init>()
-	at org.apache.hadoop.util.ReflectionUtils.newInstance(ReflectionUtils.java:137)
-	at org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:760)
-	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:348)
-	at org.apache.hadoop.mapred.LocalJobRunner$Job$MapTaskRunnable.run(LocalJobRunner.java:271)
-	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
-	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:750)
-Caused by: java.lang.NoSuchMethodException: priv.xuyi.bayesMR.job.sequencefile.SmallFilesToSequenceFileConverter$SequenceFileMapper.<init>()
-	at java.lang.Class.getConstructor0(Class.java:3082)
-	at java.lang.Class.getDeclaredConstructor(Class.java:2178)
-	at org.apache.hadoop.util.ReflectionUtils.newInstance(ReflectionUtils.java:131)
-	... 8 more
+        java.lang.Exception: java.lang.RuntimeException: java.lang.NoSuchMethodException: priv.xuyi.bayesMR.job.sequencefile.SmallFilesToSequenceFileConverter$SequenceFileMapper.<init>()
+        at org.apache.hadoop.mapred.LocalJobRunner$Job.runTasks(LocalJobRunner.java:492)
+        at org.apache.hadoop.mapred.LocalJobRunner$Job.run(LocalJobRunner.java:552)
+        Caused by: java.lang.RuntimeException: java.lang.NoSuchMethodException: priv.xuyi.bayesMR.job.sequencefile.SmallFilesToSequenceFileConverter$SequenceFileMapper.<init>()
+        at org.apache.hadoop.util.ReflectionUtils.newInstance(ReflectionUtils.java:137)
+        at org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:760)
+        at org.apache.hadoop.mapred.MapTask.run(MapTask.java:348)
+        at org.apache.hadoop.mapred.LocalJobRunner$Job$MapTaskRunnable.run(LocalJobRunner.java:271)
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at java.lang.Thread.run(Thread.java:750)
+        Caused by: java.lang.NoSuchMethodException: priv.xuyi.bayesMR.job.sequencefile.SmallFilesToSequenceFileConverter$SequenceFileMapper.<init>()
+        at java.lang.Class.getConstructor0(Class.java:3082)
+        at java.lang.Class.getDeclaredConstructor(Class.java:2178)
+        at org.apache.hadoop.util.ReflectionUtils.newInstance(ReflectionUtils.java:131)
+        ... 8 more
 ```
 
 A: [MapReduce错误之Error: java.lang.RuntimeException: java.lang.NoSuchMethodException的解决方法-百度网盘下载-Java自学者论坛 - Powered by Discuz! (javazxz.com)](https://www.javazxz.com/thread-5343-1-1.html)
@@ -573,7 +573,7 @@ flowchart TB
 
 ```java
 FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_INPUT_PATH + "/CANA")); // 设置输入文件目录
-FileOutputFormat.setOutputPath(job, new Path(Const.WORD_COUNT_OUTPUT_PATH)); // 设置输出文件目录
+        FileOutputFormat.setOutputPath(job, new Path(Const.WORD_COUNT_OUTPUT_PATH)); // 设置输出文件目录
 ```
 
 ## （2）convert to sequence file
@@ -582,29 +582,33 @@ FileOutputFormat.setOutputPath(job, new Path(Const.WORD_COUNT_OUTPUT_PATH)); // 
 
 ```java
     configuration.set("INPUT_PATH", Const.TRAIN_DATA_INPUT_PATH);
-    configuration.set("OUTPUT_PATH", Const.TRAIN_DATA_SEQUENCE_FILE_PATH);
+        configuration.set("OUTPUT_PATH", Const.TRAIN_DATA_SEQUENCE_FILE_PATH);
 ```
 
 ### ② 测试集
 
 ```java
     configuration.set("INPUT_PATH", Const.TEST_DATA_INPUT_PATH);
-    configuration.set("OUTPUT_PATH", Const.TEST_DATA_SEQUENCE_FILE_PATH);
+        configuration.set("OUTPUT_PATH", Const.TEST_DATA_SEQUENCE_FILE_PATH);
 ```
 
 ## （3）p(class)统计各类别文档数目
 
 ```java
 FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_SEQUENCE_FILE_PATH));
-FileOutputFormat.setOutputPath(job, new Path(Const.GET_DOC_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH));
+        FileOutputFormat.setOutputPath(job, new Path(Const.GET_DOC_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH));
 ```
 
 ### ① map
+
+处理内容：
 
             key: CANA@487557newsML.txt
             value: 487557newsML.txt的文件内容
 
 ### ② reduce
+
+处理内容：
 
             key: CANA
             values: [1,1,1,1,1.....,1,1,1]
@@ -618,10 +622,14 @@ FileOutputFormat.setOutputPath(job, new Path(Const.GET_SINGLE_WORD_COUNT_FROM_DO
 
 ### ① map
 
+处理内容：
+
             key: CANA@487557newsML.txt
             value: 487557newsML.txt的文件内容
 
 ### ② reduce
+
+处理内容：
 
             key: CANA@hello
             value: [1,1,1,1,1....,1,1,1]
@@ -637,10 +645,14 @@ FileOutputFormat.setOutputPath(job, new Path(Const.GET_TOTAL_WORD_COUNT_FROM_DOC
 
 ### ① map
 
+处理内容：
+
             key: CANA@hello
             value: 13 表示hello在CANA文档类别中出现了13次
 
 ### ② reduce
+
+处理内容：
 
             key: CANA
             values: [13,1,1,24,3,7....12,3,6]
@@ -671,23 +683,71 @@ docTypeList = configuration.get("DOC_TYPE_LIST").split("@");
 
 - （3）中的 GET_DOC_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH
 
-    - 直接得到之前处理好的每个文档类型的总单词数，存入 eachWordCountInDocTypeMap
-    - 举例：
+  - 直接得到之前处理好的每个类型的文档总数，存入 Map<String, Integer>：eachWordCountInDocTypeMap
+  - 举例：
 
   ```
           key: CANA
           value: 300
   ```
 
-    - 一个循环计算总单词数，最后计算文档 Ci 的先验概率：P(Ci) = 类型 Ci 的文档数 / 总文档数？：docTypePriorProbabilityMap（eachWordCountInDocTypeMap 中每一个类别的数目除以 eachWordCountInDocTypeMap 的总数）
+  - 一个循环计算总文档数，最后计算文档 Ci 的**先验概率**：P(Ci) = 类型 Ci 的文档数 / 总文档数：Map<String, Double> docTypePriorProbabilityMap = eachWordCountInDocTypeMap 中每一个类别的数目 / eachWordCountInDocTypeMap 的总数
+
+- （4）中的 GET_SINGLE_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH
+
+  - 直接得到之前处理好的每个类型下每个单词的总数，存入 Map<String, Integer>：eachWordCountInDocTypeMap
+
+  - 举例：
+
+    ```
+    	key: CANA@hello
+    	value: 13
+    ```
+
+- （5）中的 GET_TOTAL_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH
+
+  - 直接得到之前处理好的每个类型中所有单词的总数，存入 Map<String, Integer>：allWordCountInDocTypeMap
+
+  - 举例
+
+    ```
+    	key: CANA
+    	value: 184032
+    ```
+
+- 计算条件概率：Map<String, Double> wordConditionalProbabilityMap = eachWordCountInDocTypeMap / allWordCountInDocTypeMap（同种类别下）
 
 ### ② map
 
+处理测试集：
 
+        key: CANA@487557newsML.txt
+        value: 487557newsML.txt的文件内容
+
+对每个文档中的每个单词计算条件概率（取 log 相加）
+
+**注：没有计算所有文档中不同单词的个数，但又要避免因为单词没有出现过而导致概率为 0 的情况，为了便利，稍微改变原来的加一平滑策略，变成当该单词没有出现时，设置该单词出现次数为 1**
+
+总的条件概率最后还要加上该类型的先验概率（取 log）
+
+处理后结果：
+
+```
+	key: CANA@487557newsML.txt
+    value : CANA@-334.2343
+    
+    key: CANA@487557newsML.txt
+    value : CHINA@-484.49404
+```
 
 ### ③ reduce
 
+取最大的值
 
+```
+	key: CANA@487557newsML.txt
+    value : CHINA@-484.49404
+```
 
 # 10、数据集
 
@@ -696,6 +756,47 @@ docTypeList = configuration.get("DOC_TYPE_LIST").split("@");
 | 训练集 |  200  | 200  | 400  |
 | 测试集 |  105  |  63  | 168  |
 |  总计  |  305  | 263  | 568  |
+
+# 11、分析
+
+对于类别 class：
+
+- 真实类型为 class 则 yes，否则 no
+- 分类器分类结果为 class 则 yes，否则 no
+
+| 分类器分类结果\真实类型 |  yes  |  no   |
+| :---------------------: | :---: | :---: |
+|           yes           | A(TP) | B(FP) |
+|           no            | C(FN) | d(TN) |
+
+$$
+Precision=\frac{TP}{TP+FP} \\
+Recall=\frac{TP}{TP+FN} \\
+F1=\frac{2PR}{P+R}
+$$
+
+Q：为什么不全加 TP、FP、FN 和 TN 作为分母
+
+A：因为 TN 太大了
+
+从 GET_NAIVE_BAYES_RESULT_JOB_OUTPUT_PATH 读取结果，存入到 Map<String, String> docPredictResultMap 中：
+
+```
+	key: CHINA@481518newsML.txt
+    value: CANA@-1953.9381329830253	
+```
+
+取真实类型和分类器分类结果：
+
+```
+String realDocType = key.split("@")[0];
+String predictDocType = value.split("@")[0];
+```
+
+对于每个类别，比较与真实类型和分类器分类结果是否相同，根据结果对 TP、FP、FN 或 TN 加一
+
+- 微平均：将所有类的邻接矩阵合并，再求值
+- 宏平均：对每个类的邻接矩阵求值，然后平均
 
 # Other、Local Aggregation
 
@@ -748,13 +849,13 @@ Mapper 的输出是<t, t 在 d 中出现的次数>，注意：这时 map 输出�
 ```java
 class Mapper
 	method Initialize
-            H ← new AssociativeArray // 现在是在Initialize方法里初始化AssociativeArray Initialize方法就是setup方法，后面不再特别说明。这样可以在Map方法的多次调用间保存状态
-        method Map(docid a, doc d)
+    	H ← new AssociativeArray // 现在是在Initialize方法里初始化AssociativeArray Initialize方法就是setup方法，后面不再特别说明。这样可以在Map方法的多次调用间保存状态
+    method Map(docid a, doc d)
         for all term t ∈ doc d do
-        H{t} ← H{t} + 1 // 由于每次Map调用传进来整个文档，因此现在是跨文档进行单词出现次数统计
-        method Close
+        	H{t} ← H{t} + 1 // 由于每次Map调用传进来整个文档，因此现在是跨文档进行单词出现次数统计
+    method Close
         for all term t ∈ H do
-        Emit(term t, count H{t}) // 现在是在Close方法里输出键值对，Close方法就是cleanup方法，后面不再特别说明。t是跨多个文档的不重复的t，因此In-Mapper Combiner进一步大大减少了Mapper输出的键值对数量
+        	Emit(term t, count H{t}) // 现在是在Close方法里输出键值对，Close方法就是cleanup方法，后面不再特别说明。t是跨多个文档的不重复的t，因此In-Mapper Combiner进一步大大减少了Mapper输出的键值对数量
 ```
 
 [(132条消息) MapReduce设计模式之In-mapper Combining_weixin_34345560的博客-CSDN博客](https://blog.csdn.net/weixin_34345560/article/details/93881621)
@@ -763,26 +864,26 @@ class Mapper
 
 ```java
 public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
-    private final static IntWritable one = new IntWritable(1);
-    private Text word = new Text();
+  private final static IntWritable one = new IntWritable(1);
+  private Text word = new Text();
 
-    /**
-     *
-     * @param key   input
-     * @param value input
-     * @param context   用户代码与 MR 系统交互的上下文
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    @Override
-    public void map(Object key, Text value, Mapper<Object, Text, Text, IntWritable>.Context context)
-            throws IOException, InterruptedException {
-        StringTokenizer itr = new StringTokenizer(value.toString()); // 将字符串分成一个个的单词
-        while (itr.hasMoreTokens()) {
-            word.set(itr.nextToken()); // 将 token 写入 word
-            context.write(word, one); // token 出现一次, 就将 <token, 1> 写入 context, MR 将键值交给 Reducer 处理
-        }
+  /**
+   *
+   * @param key   input
+   * @param value input
+   * @param context   用户代码与 MR 系统交互的上下文
+   * @throws IOException
+   * @throws InterruptedException
+   */
+  @Override
+  public void map(Object key, Text value, Mapper<Object, Text, Text, IntWritable>.Context context)
+          throws IOException, InterruptedException {
+    StringTokenizer itr = new StringTokenizer(value.toString()); // 将字符串分成一个个的单词
+    while (itr.hasMoreTokens()) {
+      word.set(itr.nextToken()); // 将 token 写入 word
+      context.write(word, one); // token 出现一次, 就将 <token, 1> 写入 context, MR 将键值交给 Reducer 处理
     }
+  }
 }
 ```
 
