@@ -113,8 +113,12 @@ public class SmallFilesToSequenceFileConverter extends Configured implements Too
 //        System.setOut(out);
 
         Configuration configuration = new Configuration();
-        configuration.set("INPUT_PATH", Const.TRAIN_DATA_INPUT_PATH);
-        configuration.set("OUTPUT_PATH", Const.TRAIN_DATA_SEQUENCE_FILE_PATH);
+        /* 训练集 */
+//        configuration.set("INPUT_PATH", Const.TRAIN_DATA_INPUT_PATH);
+//        configuration.set("OUTPUT_PATH", Const.TRAIN_DATA_SEQUENCE_FILE_PATH);
+        /* 测试集 */
+        configuration.set("INPUT_PATH", Const.TEST_DATA_INPUT_PATH);
+        configuration.set("OUTPUT_PATH", Const.TEST_DATA_SEQUENCE_FILE_PATH);
         int run = ToolRunner.run(configuration, new SmallFilesToSequenceFileConverter(), args);
         System.exit(run);
     }

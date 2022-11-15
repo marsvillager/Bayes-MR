@@ -68,7 +68,7 @@ public class Const {
      */
     public static final String HADOOP_DEFAULT_OUTPUT_FILE_NAME = "/part-r-00000";
 
-    public static final String DOC_TYPE_LIST = "AUSTR@CANA";
+    public static final String DOC_TYPE_LIST = "AUSTR@BRAZ";
 
     public static final List<String> STOP_WORDS_LIST = Arrays.asList(stopWordsArray);
 }

@@ -140,6 +140,14 @@ public class GetNaiveBayesResult extends Configured implements Tool {
             });
         }
 
+        /**
+         *
+         * @param key
+         * @param value
+         * @param context
+         * @throws IOException
+         * @throws InterruptedException
+         */
         @Override
         protected void map(Text key, BytesWritable value, Context context) throws IOException, InterruptedException {
             // key: CANA@487557newsML.txt
@@ -176,6 +184,14 @@ public class GetNaiveBayesResult extends Configured implements Tool {
         // 测试集中文档被分为Ci类的概率
         Text docTypeForecastResult = new Text();
 
+        /**
+         *
+         * @param key
+         * @param values
+         * @param context
+         * @throws IOException
+         * @throws InterruptedException
+         */
         @Override
         // 计算文档d是哪一类
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
@@ -194,7 +210,7 @@ public class GetNaiveBayesResult extends Configured implements Tool {
             }
             this.docTypeForecastResult.set(forecastDocType + "@" + maxProbability);
             context.write(key, docTypeForecastResult);
-//            System.out.println(key.toString() + " 预测分类为： " + forecastDocType + " ，预测概率为：" + maxProbability);
+            System.out.println(key.toString() + " 预测分类为： " + forecastDocType + " ，预测概率为：" + maxProbability);
         }
     }
 

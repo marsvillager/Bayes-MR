@@ -4,12 +4,14 @@ from hdfs import InsecureClient
 
 # hdfs 目标路径
 # base_path = "/TRAIN_DATA_FILE/AUSTR"
-# base_path = "/TRAIN_DATA_FILE/CANA"
-base_path = "/TEST_DATA_FILE/CANA"
+# base_path = "/TRAIN_DATA_FILE/BRAZ"
+base_path = "/TEST_DATA_FILE/AUSTR"
+# base_path = "/TEST_DATA_FILE/BRAZ"
 # 本地需要上传的路径（相对路径）
 # dir = "./NBCorpus/TRAIN_DATA_FILE/AUSTR"
-# dir = "./NBCorpus/TRAIN_DATA_FILE/CANA"
-dir = "./NBCorpus/TEST_DATA_FILE/CANA"
+# dir = "./NBCorpus/TRAIN_DATA_FILE/BRAZ"
+dir = "./NBCorpus/TEST_DATA_FILE/AUSTR"
+# dir = "./NBCorpus/TEST_DATA_FILE/BRAZ"
 
 client_hdfs = InsecureClient('http://192.168.73.169:9870', user='reptile')
 client_hdfs.makedirs(base_path)
