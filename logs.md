@@ -537,14 +537,14 @@ flowchart TB
 	A --> G(TEST_DATA_SEQUENCE_FILE)
 ```
 
-|        数据相关的常量         |                 具体值                  |               含义                |
-| :---------------------------: | :-------------------------------------: | :-------------------------------: |
-|           BASE_PATH           |           hdfs://master:9000            |              根目录               |
-|    WORD_COUNT_OUTPUT_PATH     |  BASE_PATH + "/WORD_COUNT_JOB_OUTPUT"   |          word count 结果          |
-|     TRAIN_DATA_INPUT_PATH     |     BASE_PATH + "/TRAIN_DATA_FILE"      |        训练集原始输入目录         |
-|     TEST_DATA_INPUT_PATH      |      BASE_PATH + "/TEST_DATA_FILE"      |        测试集原始输入目录         |
-| TRAIN_DATA_SEQUENCE_FILE_PATH | BASE_PATH + "/TRAIN_DATA_SEQUENCE_FILE" | 训练集整合为sequence file后的目录 |
-| TEST_DATA_SEQUENCE_FILE_PATH  | BASE_PATH + "/TEST_DATA_SEQUENCE_FILE"  | 测试集整合为sequence file后的目录 |
+|        数据相关的常量         |                 具体值                  |                     含义                     |
+| :---------------------------: | :-------------------------------------: | :------------------------------------------: |
+|           BASE_PATH           |           hdfs://master:9000            |                    根目录                    |
+|    WORD_COUNT_OUTPUT_PATH     |  BASE_PATH + "/WORD_COUNT_JOB_OUTPUT"   |               word count 结果                |
+|     TRAIN_DATA_INPUT_PATH     |     BASE_PATH + "/TRAIN_DATA_FILE"      |              训练集原始输入目录              |
+|     TEST_DATA_INPUT_PATH      |      BASE_PATH + "/TEST_DATA_FILE"      |              测试集原始输入目录              |
+| TRAIN_DATA_SEQUENCE_FILE_PATH | BASE_PATH + "/TRAIN_DATA_SEQUENCE_FILE" | sequenceFile将训练集整合为一个大文件后的目录 |
+| TEST_DATA_SEQUENCE_FILE_PATH  | BASE_PATH + "/TEST_DATA_SEQUENCE_FILE"  | sequenceFile将测试集整合为一个大文件后的目录 |
 
 ```mermaid
 flowchart TB
@@ -613,11 +613,11 @@ FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_SEQUENCE_FILE_PATH))
             key: CANA
             values: [1,1,1,1,1.....,1,1,1]
 
-## （4）p(term|class)统计单词出现次数
+## （4）p(term|class)统计各类别各单词出现次数
 
 ```java
 FileInputFormat.addInputPath(job, new Path(Const.TRAIN_DATA_SEQUENCE_FILE_PATH));
-FileOutputFormat.setOutputPath(job, new Path(Const.GET_SINGLE_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH));
+        FileOutputFormat.setOutputPath(job, new Path(Const.GET_SINGLE_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH));
 ```
 
 ### ① map
@@ -640,7 +640,7 @@ FileOutputFormat.setOutputPath(job, new Path(Const.GET_SINGLE_WORD_COUNT_FROM_DO
 
 ```java
 FileInputFormat.addInputPath(job, new Path(Const.GET_SINGLE_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH));
-FileOutputFormat.setOutputPath(job, new Path(Const.GET_TOTAL_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH));
+        FileOutputFormat.setOutputPath(job, new Path(Const.GET_TOTAL_WORD_COUNT_FROM_DOC_TYPE_JOB_OUTPUT_PATH));
 ```
 
 ### ① map
@@ -661,7 +661,7 @@ FileOutputFormat.setOutputPath(job, new Path(Const.GET_TOTAL_WORD_COUNT_FROM_DOC
 
 ```java
 FileInputFormat.addInputPath(job, new Path(Const.TEST_DATA_SEQUENCE_FILE_PATH));
-FileOutputFormat.setOutputPath(job, new Path(Const.GET_NAIVE_BAYES_RESULT_JOB_OUTPUT_PATH));
+        FileOutputFormat.setOutputPath(job, new Path(Const.GET_NAIVE_BAYES_RESULT_JOB_OUTPUT_PATH));
 ```
 
 |        分析相关的变量         |         类型         |               含义               |
@@ -798,7 +798,7 @@ String predictDocType = value.split("@")[0];
 - 微平均：将所有类的邻接矩阵合并，再求值
 - 宏平均：对每个类的邻接矩阵求值，然后平均
 
-# Other、Local Aggregation
+# 12、Local Aggregation
 
 ## （1）官方 Combiner
 
@@ -849,13 +849,13 @@ Mapper 的输出是<t, t 在 d 中出现的次数>，注意：这时 map 输出�
 ```java
 class Mapper
 	method Initialize
-    	H ← new AssociativeArray // 现在是在Initialize方法里初始化AssociativeArray Initialize方法就是setup方法，后面不再特别说明。这样可以在Map方法的多次调用间保存状态
-    method Map(docid a, doc d)
+            H ← new AssociativeArray // 现在是在Initialize方法里初始化AssociativeArray Initialize方法就是setup方法，后面不再特别说明。这样可以在Map方法的多次调用间保存状态
+        method Map(docid a, doc d)
         for all term t ∈ doc d do
-        	H{t} ← H{t} + 1 // 由于每次Map调用传进来整个文档，因此现在是跨文档进行单词出现次数统计
-    method Close
+        H{t} ← H{t} + 1 // 由于每次Map调用传进来整个文档，因此现在是跨文档进行单词出现次数统计
+        method Close
         for all term t ∈ H do
-        	Emit(term t, count H{t}) // 现在是在Close方法里输出键值对，Close方法就是cleanup方法，后面不再特别说明。t是跨多个文档的不重复的t，因此In-Mapper Combiner进一步大大减少了Mapper输出的键值对数量
+        Emit(term t, count H{t}) // 现在是在Close方法里输出键值对，Close方法就是cleanup方法，后面不再特别说明。t是跨多个文档的不重复的t，因此In-Mapper Combiner进一步大大减少了Mapper输出的键值对数量
 ```
 
 [(132条消息) MapReduce设计模式之In-mapper Combining_weixin_34345560的博客-CSDN博客](https://blog.csdn.net/weixin_34345560/article/details/93881621)
@@ -887,13 +887,43 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
 }
 ```
 
-## imporve
+## imporve(failed)
 
-```
+```java
+public class TokenizerInMapperCombiner extends Mapper<Object, Text, Text, IntWritable> {
+  private static Map<Text, Integer> inMapperCombiner = null;
+  private Text word = new Text();
 
+  @Override
+  protected void setup(Mapper<Object, Text, Text, IntWritable>.Context context) throws IOException, InterruptedException {
+    inMapperCombiner = new HashMap<>();
+  }
+
+
+  @Override
+  protected void map(Object key, Text value, Mapper<Object, Text, Text, IntWritable>.Context context)
+          throws IOException, InterruptedException {
+    StringTokenizer itr = new StringTokenizer(value.toString()); // 将字符串分成一个个的单词  
+    while (itr.hasMoreTokens()) {
+      word.set(itr.nextToken()); // 将 token 写入 word  
+      if(inMapperCombiner.containsKey(word)) { // 键值对已存在，则值自增 1  
+        int tmp = inMapperCombiner.get(word);
+        inMapperCombiner.put(word, tmp + 1);
+      }
+      else inMapperCombiner.put(word, 1); // 键值对不存在，则插入  
+    }
+  }
+
+
+  @Override
+  protected void cleanup(Mapper<Object, Text, Text, IntWritable>.Context context) throws IOException, InterruptedException {
+    for (Text text : inMapperCombiner.keySet()) {
+      context.write(text, new IntWritable(inMapperCombiner.get(text))); // 统一写入  
+    }
+  }
+}  
 ```
 
 # Token
 
 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
-

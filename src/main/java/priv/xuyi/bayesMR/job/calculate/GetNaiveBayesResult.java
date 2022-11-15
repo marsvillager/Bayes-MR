@@ -180,7 +180,7 @@ public class GetNaiveBayesResult extends Configured implements Tool {
         // 计算文档d是哪一类
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             // key: CANA@487557newsML.txt
-            // value : CANA@-334.2343 / CHINA@-484.49404
+            // value : CANA@-334.2343 / AUSTR@-484.49404
 
             // 最大概率默认负无穷
             double maxProbability = Double.NEGATIVE_INFINITY;

@@ -7,6 +7,7 @@ import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import priv.xuyi.bayesMR.job.calculate.GetNaiveBayesResult;
@@ -116,5 +117,10 @@ public class Evaluation extends Configured implements Tool {
     public int run(String[] strings) throws Exception {
         analysis();
         return 0;
+    }
+
+    public static void main(String[] args) throws Exception {
+        int run = ToolRunner.run(new Configuration(), new Evaluation(), args);
+        System.exit(run);
     }
 }
