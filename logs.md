@@ -59,7 +59,7 @@ A:
 
 [(131条消息) 解决报错显示：log4j:WARN No appenders could be found for logger ._⚆Pearl的博客-CSDN博客](https://blog.csdn.net/weixin_58330979/article/details/123576662)
 
-把v log4j.properties 文件加入工程内就可以了，一般存放于 target/classes 的文件夹下。
+把 log4j.properties 文件加入工程内就可以了，一般存放于 target/classes 的文件夹下。
 
 # 2、windows 下 hadoop（closed）
 

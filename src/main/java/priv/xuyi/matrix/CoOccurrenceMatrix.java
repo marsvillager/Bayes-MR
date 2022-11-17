@@ -118,9 +118,10 @@ public class CoOccurrenceMatrix extends Configured implements Tool {
 
         job.setJarByClass(CoOccurrenceMatrix.class); // 设置启动类, 如果要打包到集群上运行，必须添加该设置
         job.setMapperClass(StripesOccurrenceMapper.class); // 设置 Mapper 类
+        job.setCombinerClass(StripesReducer.class);
         job.setReducerClass(StripesReducer.class); // 设置 Reducer 类
         job.setOutputKeyClass(Text.class); // 设置输出 key 的类型
-        job.setOutputValueClass(IntWritable.class); // 设置输出值的类型
+        job.setOutputValueClass(MapWritable.class); // 设置输出值的类型
 
         FileInputFormat.addInputPath(job, new Path(Const.MITRE_ATTACK_DATA)); // 设置输入文件目录
         FileOutputFormat.setOutputPath(job, new Path(Const.WORD_MATRIX_OUTPUT_PATH)); // 设置输出文件目录

@@ -33,9 +33,9 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
             throws IOException, InterruptedException {
 
         // print log to .txt file
-        String fileName="log.txt";
-        PrintStream out = new PrintStream(fileName);
-        System.setOut(out);
+//        String fileName="log.txt";
+//        PrintStream out = new PrintStream(fileName);
+//        System.setOut(out);
 
         StringTokenizer itr = new StringTokenizer(value.toString()); // 将字符串分成一个个的单词
         while (itr.hasMoreTokens()) {
