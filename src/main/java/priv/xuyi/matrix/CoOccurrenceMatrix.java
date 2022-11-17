@@ -24,7 +24,7 @@ import java.util.Set;
  * @description Realization of word co-occurrence matrix based on hadoop
  */
 public class CoOccurrenceMatrix extends Configured implements Tool {
-    public class StripesOccurrenceMapper extends Mapper<LongWritable, Text, Text, MapWritable> {
+    static class StripesOccurrenceMapper extends Mapper<LongWritable, Text, Text, MapWritable> {
         private MapWritable occurrenceMap = new MapWritable();
         private Text word = new Text();
 
@@ -63,7 +63,7 @@ public class CoOccurrenceMatrix extends Configured implements Tool {
         }
     }
 
-    public class StripesReducer extends Reducer<Text, MapWritable, Text, MapWritable> {
+    static class StripesReducer extends Reducer<Text, MapWritable, Text, MapWritable> {
         private MapWritable incrementingMap = new MapWritable();
 
         /**
