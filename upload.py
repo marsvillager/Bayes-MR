@@ -8,10 +8,10 @@ from hdfs import InsecureClient
 base_path = "/TEST_DATA_FILE/AUSTR"
 # base_path = "/TEST_DATA_FILE/BRAZ"
 # 本地需要上传的路径（相对路径）
-# dir = "./NBCorpus/TRAIN_DATA_FILE/AUSTR"
-# dir = "./NBCorpus/TRAIN_DATA_FILE/BRAZ"
-dir = "./NBCorpus/TEST_DATA_FILE/AUSTR"
-# dir = "./NBCorpus/TEST_DATA_FILE/BRAZ"
+# local_dir = "./NBCorpus/TRAIN_DATA_FILE/AUSTR"
+# local_dir = "./NBCorpus/TRAIN_DATA_FILE/BRAZ"
+local_dir = "./NBCorpus/TEST_DATA_FILE/AUSTR"
+# local_dir = "./NBCorpus/TEST_DATA_FILE/BRAZ"
 
 client_hdfs = InsecureClient('http://192.168.73.169:9870', user='reptile')
 client_hdfs.makedirs(base_path)
@@ -33,4 +33,4 @@ def upload_train_data(path: str) -> None:
 
 
 if __name__ == '__main__':
-    upload_train_data(dir)
+    upload_train_data(local_dir)
